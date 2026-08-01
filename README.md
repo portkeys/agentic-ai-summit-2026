@@ -4,7 +4,13 @@ A small offline-capable PWA for picking sessions at the
 [Agentic AI Summit 2026](https://rdi.berkeley.edu/events/agentic-ai-summit-2026)
 (UC Berkeley, Aug 1–2 2026).
 
-Published: <https://claude.ai/code/artifact/b4349ba2-f337-4899-b01a-dbbc905b8610>
+**Live: <https://portkeys.github.io/agentic-ai-summit-2026/>**
+
+Add it to your phone's home screen (Safari: Share → Add to Home Screen) and it
+installs as a standalone app with a service worker, so it works with no signal.
+
+Also published as a Claude artifact (needs a claude.ai login, no service worker):
+<https://claude.ai/code/artifact/b4349ba2-f337-4899-b01a-dbbc905b8610>
 
 ## What it does
 
