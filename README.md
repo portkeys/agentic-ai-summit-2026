@@ -33,12 +33,32 @@ matches the pin on the printed map:
 
 Note that **Sunday has no Nexus track** — Sunday runs Plenary, Atlas and Compass.
 
+## Regenerating the schedule
+
+```bash
+python3 scrape_agenda.py
+```
+
+The page renders seven tab panels, `#agenda-track-0` .. `#agenda-track-6`.
+Their order follows the tab buttons, which interleaves the two days per
+stage — **not** all of Saturday then all of Sunday:
+
+| Panel | 0 | 1 | 2 | 3 | 4 | 5 | 6 |
+| ----- | - | - | - | - | - | - | - |
+| Track | Plenary Sat | Plenary Sun | Atlas Sat | Atlas Sun | Nexus Sat | Compass Sat | Compass Sun |
+
+Transcribing that by hand got five of the seven wrong, which is why the file
+is generated. The scraper asserts the tab labels still match that table, and
+that every `.speaker` block in the page survives into the output; it exits
+non-zero rather than emitting a plausible-looking wrong schedule.
+
 ## Files
 
 | File                | Purpose |
 | ------------------- | ------- |
 | `index.html`        | The whole app — markup, styles, logic |
-| `data.js`           | Schedule data, transcribed from the RDI agenda page |
+| `data.js`           | Schedule data — **generated**, do not hand-edit |
+| `scrape_agenda.py`  | Regenerates `data.js` from the RDI agenda page |
 | `map.jpg`           | Venue map |
 | `manifest.json`, `sw.js`, `icon-*.png` | PWA install + offline cache |
 | `build_artifact.py` | Folds everything into one self-contained file |
