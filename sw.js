@@ -1,7 +1,7 @@
 /* Cache-first service worker. The schedule is fixed for the weekend, so
    serving from cache and refreshing in the background is the right
    trade — the app has to work in a packed auditorium with no signal. */
-const CACHE = 'aisummit-2026-v1';
+const CACHE = 'aisummit-2026-v2';
 const ASSETS = [
   './', './index.html', './data.js', './map.jpg',
   './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png',

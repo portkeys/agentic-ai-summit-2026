@@ -137,6 +137,9 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .eyebrow .stage{color:var(--c)}
 .eyebrow .kind{color:var(--muted)}
 .eyebrow .live{color:#fff;background:var(--danger);padding:3px 6px;border-radius:4px;letter-spacing:.06em}
+/* Saved needs a cue that is not colour alone — the gold star is easy to
+   miss on a phone, and invisible to anyone who cannot separate the hues. */
+.eyebrow .kept{color:#22190A;background:var(--gold);padding:3px 6px;border-radius:4px;letter-spacing:.06em}
 .title{margin:0;font-size:15.5px;font-weight:640;letter-spacing:-.014em;line-height:1.3;text-wrap:balance}
 .card.brk .title{font-weight:550;color:var(--ink-2);font-size:14.5px}
 .where{margin-top:5px;display:flex;align-items:center;gap:5px;
@@ -225,6 +228,19 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   color:var(--muted);font:600 10px/1 var(--sans)}
 .navbtn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .navbtn[aria-current="page"]{color:var(--ink)}
+/* Confirmation for a tap that would otherwise only change a small icon. */
+.toast{position:fixed;left:50%;bottom:calc(var(--nav-h) + 12px);z-index:60;
+  transform:translate(-50%,10px);display:flex;align-items:center;gap:9px;
+  max-width:min(92vw,420px);padding:10px 14px;border-radius:11px;
+  background:var(--ink);color:var(--bg);font:600 13px/1.35 var(--sans);
+  box-shadow:0 10px 30px -10px rgba(0,0,0,.55);
+  opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast svg{width:17px;height:17px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round}
+.toast.add svg{fill:var(--gold);stroke:var(--gold)}
+.toast .what{font-weight:500;opacity:.72;display:block;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:26ch}
+
 .badge{position:absolute;top:4px;left:50%;margin-left:6px;
   min-width:16px;height:16px;padding:0 4px;border-radius:99px;background:var(--gold);color:#22190A;
   font:700 10px/16px var(--mono);text-align:center;font-variant-numeric:tabular-nums}
@@ -251,6 +267,8 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   </header>
   <main id="main"></main>
 </div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <nav class="nav" id="nav" aria-label="Views">
   <div class="navwrap">
@@ -383,13 +401,36 @@ $('#btn-search').addEventListener('click', () => {
 });
 $('#search').addEventListener('input', e => { state.q = e.target.value.trim().toLowerCase(); render(); });
 
+/* Each view keeps its own scroll position. Coming back to a 43-card agenda
+   at the top, after starring something far down it, reads as if the tap
+   never registered. */
+const scrollMemo = { agenda:0, mine:0, map:0 };
+
 $('#nav').addEventListener('click', e => {
   const b = e.target.closest('.navbtn');
-  if (!b) return;
+  if (!b || b.dataset.view === state.view) return;
+  scrollMemo[state.view] = window.scrollY;
   state.view = b.dataset.view;
-  window.scrollTo(0,0);
   render();
+  window.scrollTo(0, scrollMemo[state.view] || 0);
 });
+
+let toastTimer = null;
+function toast(added, what){
+  const t = $('#toast');
+  t.className = 'toast on ' + (added ? 'add' : 'del');
+  t.innerHTML = ICON.star
+    + '<span><span>' + (added ? 'Added to My Schedule' : 'Removed') + '</span>'
+    + '<span class="what">' + esc(what) + '</span></span>';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('on'), 2200);
+}
+
+function updateBadge(){
+  const badge = $('#badge');
+  badge.textContent = saved.size;
+  badge.classList.toggle('hide', saved.size === 0);
+}
 
 /* ═══ Cards ═══════════════════════════════════════════════════════ */
 const KIND = { session:'Talks', panel:'Panel', workshop:'Workshop',
@@ -424,6 +465,7 @@ function card(s, advisories){
 
   const eye = el('div','eyebrow');
   eye.innerHTML = (live ? '<span class="live">Now</span>' : '')
+    + (saved.has(s.id) ? '<span class="kept">Saved</span>' : '')
     + '<span class="stage">' + esc(st.name) + '</span>'
     + '<span class="kind">' + (KIND[s.kind] || '') + '</span>';
   body.appendChild(eye);
@@ -449,8 +491,16 @@ function card(s, advisories){
   star.setAttribute('aria-label', (on ? 'Remove ' : 'Add ') + s.title + (on ? ' from' : ' to') + ' my schedule');
   star.onclick = ev => {
     ev.stopPropagation();
-    if (saved.has(s.id)) saved.delete(s.id); else saved.add(s.id);
-    persist(); render();
+    const added = !saved.has(s.id);
+    if (added) saved.add(s.id); else saved.delete(s.id);
+    persist();
+    toast(added, s.title);
+    /* Removing a pick changes the clash and walk notes on its neighbours,
+       so My Schedule needs the full pass. On the agenda only this one card
+       changes — swapping it in place keeps the list from moving under the
+       thumb that just tapped it. */
+    if (state.view === 'mine') { render(); }
+    else { c.replaceWith(card(s, advisories)); updateBadge(); }
   };
   main.appendChild(star);
   c.appendChild(main);
@@ -683,9 +733,7 @@ function render(){
     else b.removeAttribute('aria-current');
   });
 
-  const badge = $('#badge');
-  badge.textContent = saved.size;
-  badge.classList.toggle('hide', saved.size === 0);
+  updateBadge();
 
   if (agenda) viewAgenda(main);
   else if (state.view === 'mine') viewMine(main);
@@ -694,8 +742,14 @@ function render(){
 
 render();
 
-/* Keep the "Now" pill honest while the app sits open. */
-setInterval(() => { if (state.view !== 'map') render(); }, 60000);
+/* Keep the "Now" pill honest while the app sits open, without yanking the
+   list out from under whoever is reading it. */
+setInterval(() => {
+  if (state.view === 'map') return;
+  const y = window.scrollY;
+  render();
+  window.scrollTo(0, y);
+}, 60000);
 
 /* sw:start — build_artifact.py strips this block; there is no
    same-origin sw.js on the artifact host. */
