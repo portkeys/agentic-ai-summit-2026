@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Agentic AI Summit 2026</title>
+<meta name="description" content="Personal schedule builder for the Agentic AI Summit 2026 at UC Berkeley.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Summit">
+<meta name="theme-color" content="#0B1220">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>
+/* ═══ Tokens ═══════════════════════════════════════════════════════
+   Stage hues are lifted from the venue-map pin colours, so a pill in
+   the app matches the pin on the printed map.                        */
+:root{
+  --s-plenary:#7B4FD6; --s-atlas:#E8508D; --s-nexus:#F0922B; --s-compass:#2D7FF0;
+  --gold:#FDB515;              /* California Gold — saved state only  */
+  --danger:#D93A40; --warn:#B4740E;
+
+  --bg:#F5F7FA; --surface:#FFFFFF; --surface-2:#EEF1F6;
+  --ink:#0F1A2B; --ink-2:#42506A; --muted:#6B7A93;
+  --line:#DFE5EE; --line-2:#C9D2E0;
+  --shadow:0 1px 2px rgba(15,26,43,.06), 0 4px 16px -6px rgba(15,26,43,.10);
+
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+
+  --rail:58px; --pad:16px; --radius:12px;
+  --nav-h:calc(56px + env(safe-area-inset-bottom,0px));
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0B1220; --surface:#141D2E; --surface-2:#1B2639;
+    --ink:#E9EEF7; --ink-2:#B3C0D4; --muted:#8393AC;
+    --line:#243149; --line-2:#31405C;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 4px 16px -6px rgba(0,0,0,.5);
+    --danger:#FF6B6F; --warn:#E0A33A;
+    --s-plenary:#A183EA; --s-atlas:#F272A8; --s-nexus:#F5A94E; --s-compass:#5FA0F5;
+  }
+}
+/* The viewer's theme toggle stamps data-theme on :root and must win
+   over the media query in both directions. */
+:root[data-theme="light"]{
+  --bg:#F5F7FA; --surface:#FFFFFF; --surface-2:#EEF1F6;
+  --ink:#0F1A2B; --ink-2:#42506A; --muted:#6B7A93;
+  --line:#DFE5EE; --line-2:#C9D2E0;
+  --shadow:0 1px 2px rgba(15,26,43,.06), 0 4px 16px -6px rgba(15,26,43,.10);
+  --danger:#D93A40; --warn:#B4740E;
+  --s-plenary:#7B4FD6; --s-atlas:#E8508D; --s-nexus:#F0922B; --s-compass:#2D7FF0;
+}
+:root[data-theme="dark"]{
+  --bg:#0B1220; --surface:#141D2E; --surface-2:#1B2639;
+  --ink:#E9EEF7; --ink-2:#B3C0D4; --muted:#8393AC;
+  --line:#243149; --line-2:#31405C;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 4px 16px -6px rgba(0,0,0,.5);
+  --danger:#FF6B6F; --warn:#E0A33A;
+  --s-plenary:#A183EA; --s-atlas:#F272A8; --s-nexus:#F5A94E; --s-compass:#5FA0F5;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font:400 16px/1.5 var(--sans);
+  -webkit-font-smoothing:antialiased;
+  overscroll-behavior-y:none;
+}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+.app{max-width:760px;margin:0 auto;padding-bottom:calc(var(--nav-h) + 8px)}
+.hide{display:none!important}
+
+/* ═══ Header ══════════════════════════════════════════════════════ */
+.hdr{
+  position:sticky;top:0;z-index:40;background:var(--bg);
+  padding-top:env(safe-area-inset-top,0px);
+  border-bottom:1px solid var(--line);
+}
+.hdr-top{display:flex;align-items:center;gap:4px;padding:12px var(--pad) 9px}
+.wordmark{font-size:17px;font-weight:700;letter-spacing:-.022em;margin:0}
+.wordmark span{color:var(--muted);font-weight:500}
+.hdr-spacer{flex:1}
+.iconbtn{width:34px;height:34px;display:grid;place-items:center;border-radius:9px;color:var(--ink-2)}
+.iconbtn:hover{background:var(--surface-2)}
+.iconbtn svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+.days{display:flex;gap:6px;padding:0 var(--pad) 10px}
+.day{flex:1;padding:8px 6px;border-radius:9px;background:var(--surface-2);
+  border:1px solid transparent;text-align:center;line-height:1.25}
+.day b{display:block;font-size:14px;font-weight:650;letter-spacing:-.01em}
+.day small{display:block;font:500 11px/1.4 var(--mono);color:var(--muted);letter-spacing:.02em}
+.day[aria-pressed="true"]{background:var(--surface);border-color:var(--line-2);box-shadow:var(--shadow)}
+.day[aria-pressed="true"] small{color:var(--ink-2)}
+
+.tracks{display:flex;gap:6px;padding:0 var(--pad) 10px;overflow-x:auto;scrollbar-width:none}
+.tracks::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;
+  padding:5px 11px 5px 9px;border-radius:99px;
+  border:1px solid var(--line-2);background:var(--surface);
+  font:600 12.5px/1 var(--sans);letter-spacing:.01em;color:var(--ink-2);
+  transition:background .12s,color .12s,border-color .12s}
+.chip .dot{width:8px;height:8px;border-radius:50%;background:var(--c,var(--muted));flex:0 0 auto}
+.chip[aria-pressed="true"]{background:var(--c,var(--ink));border-color:var(--c,var(--ink));color:#fff}
+.chip[aria-pressed="true"] .dot{background:#fff;opacity:.85}
+.chip.all[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+
+.searchwrap{padding:0 var(--pad) 10px;display:none}
+.searchwrap.on{display:block}
+.search{width:100%;padding:9px 12px;border-radius:9px;border:1px solid var(--line-2);
+  background:var(--surface);color:var(--ink);font:400 15px var(--sans)}
+.search::placeholder{color:var(--muted)}
+
+/* ═══ Time-rail list ══════════════════════════════════════════════ */
+.slot{display:grid;grid-template-columns:var(--rail) 1fr;gap:10px;padding:0 var(--pad)}
+.rail{padding-top:14px;text-align:right;
+  font:600 12.5px/1.2 var(--mono);font-variant-numeric:tabular-nums;
+  color:var(--ink-2);letter-spacing:-.03em}
+.rail .to{display:block;font-weight:400;font-size:11px;color:var(--muted);margin-top:2px}
+
+.card{position:relative;background:var(--surface);border:1px solid var(--line);
+  border-left:3px solid var(--c,var(--line-2));
+  border-radius:var(--radius);margin-bottom:10px;box-shadow:var(--shadow);overflow:hidden}
+.card.brk{background:transparent;box-shadow:none;border-style:dashed}
+.card.saved{border-color:var(--gold);
+  box-shadow:var(--shadow),inset 0 0 0 1px color-mix(in srgb,var(--gold) 22%,transparent)}
+
+.card-main{display:flex;align-items:flex-start;gap:8px;padding:11px 10px 11px 12px}
+.card-body{flex:1;min-width:0}
+.eyebrow{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:4px;
+  font:650 10.5px/1 var(--mono);letter-spacing:.07em;text-transform:uppercase}
+.eyebrow .stage{color:var(--c)}
+.eyebrow .kind{color:var(--muted)}
+.eyebrow .live{color:#fff;background:var(--danger);padding:3px 6px;border-radius:4px;letter-spacing:.06em}
+.title{margin:0;font-size:15.5px;font-weight:640;letter-spacing:-.014em;line-height:1.3;text-wrap:balance}
+.card.brk .title{font-weight:550;color:var(--ink-2);font-size:14.5px}
+.where{margin-top:5px;display:flex;align-items:center;gap:5px;
+  font:500 12px/1.3 var(--sans);color:var(--muted)}
+.where svg{width:12px;height:12px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.7}
+.who{margin-top:6px;font-size:13px;line-height:1.45;color:var(--muted);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.who b{font-weight:600;color:var(--ink-2)}
+
+.star{flex:0 0 auto;width:38px;height:38px;margin:-3px -2px 0 0;
+  display:grid;place-items:center;border-radius:10px;color:var(--line-2);
+  transition:color .15s,transform .12s}
+.star svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round}
+.star:hover{color:var(--muted);background:var(--surface-2)}
+.star[aria-pressed="true"]{color:var(--gold)}
+.star[aria-pressed="true"] svg{fill:var(--gold)}
+.star:active{transform:scale(.86)}
+
+.more{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:7px 12px;border-top:1px solid var(--line);
+  font:600 11.5px/1 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.more:hover{background:var(--surface-2);color:var(--ink-2)}
+.more svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;transition:transform .18s}
+.card[data-open="1"] .more svg{transform:rotate(180deg)}
+.detail{display:none;padding:2px 12px 12px;border-top:1px solid var(--line)}
+.card[data-open="1"] .detail{display:block}
+.talk{display:flex;flex-direction:column;gap:2px;padding:9px 0;border-bottom:1px solid var(--line)}
+.talk:last-child{border-bottom:0;padding-bottom:2px}
+.talk .role{font:650 9.5px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;
+  color:var(--c);margin-bottom:2px}
+.talk .role.mod{color:var(--muted)}
+.talk .nm{font-size:13.5px;font-weight:640;letter-spacing:-.008em}
+.talk .af{font-size:12px;color:var(--muted);line-height:1.4}
+.talk .tt{font-size:13px;color:var(--ink-2);line-height:1.45;margin-top:3px;font-style:italic}
+.note{font-size:12.5px;color:var(--ink-2);line-height:1.5;padding:9px 0 2px;margin:0}
+
+.advis{display:flex;align-items:flex-start;gap:6px;padding:7px 12px;
+  font:500 12px/1.4 var(--sans);border-top:1px solid var(--line)}
+.advis svg{width:13px;height:13px;margin-top:1px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.advis.clash{color:var(--danger);background:color-mix(in srgb,var(--danger) 7%,transparent)}
+.advis.walk{color:var(--warn);background:color-mix(in srgb,var(--warn) 9%,transparent)}
+
+.dayhead{display:flex;align-items:center;gap:10px;padding:16px var(--pad) 8px;
+  font:650 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.dayhead::after{content:"";flex:1;height:1px;background:var(--line)}
+
+.empty{padding:56px var(--pad);text-align:center;color:var(--muted)}
+.empty svg{width:36px;height:36px;fill:none;stroke:var(--line-2);stroke-width:1.4;stroke-linejoin:round;margin-bottom:14px}
+.empty p{margin:0 auto;max-width:34ch;font-size:14px;line-height:1.6}
+.empty .k{color:var(--gold);font-weight:650}
+
+/* ═══ Venue ═══════════════════════════════════════════════════════ */
+.mapwrap{padding:14px var(--pad) 0}
+.mapfig{margin:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--surface)}
+.mapscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.mapfig img{display:block;width:100%;min-width:680px;height:auto}
+.mapfig figcaption{padding:8px 12px;font:500 11.5px/1.4 var(--mono);color:var(--muted);border-top:1px solid var(--line)}
+.legend{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:8px}
+.legend li{display:flex;align-items:flex-start;gap:9px;padding:10px 12px;background:var(--surface);
+  border:1px solid var(--line);border-left:3px solid var(--c,var(--line-2));border-radius:10px}
+.legend .pin{width:11px;height:11px;border-radius:50%;background:var(--c);margin-top:5px;flex:0 0 auto}
+.legend .lname{font-size:14px;font-weight:640;letter-spacing:-.01em}
+.legend .lwhere{font-size:12.5px;color:var(--muted);margin-top:2px}
+.notes{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.notes li{background:var(--surface);padding:9px 12px}
+.notes .nk{font:650 10px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.notes .nv{margin-top:4px;font-size:13px;line-height:1.45;color:var(--ink-2)}
+.src{padding:14px 2px 4px;font-size:11.5px;line-height:1.5;color:var(--muted)}
+.src a{color:var(--muted)}
+
+.toolbar{display:flex;gap:8px;padding:12px var(--pad) 2px}
+.tbtn{flex:1;padding:9px;border-radius:9px;border:1px solid var(--line-2);background:var(--surface);
+  font:600 13px var(--sans);color:var(--ink-2);display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.tbtn:hover{background:var(--surface-2);color:var(--ink)}
+.tbtn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tbtn.danger:hover{color:var(--danger);border-color:var(--danger)}
+
+/* ═══ Bottom nav ══════════════════════════════════════════════════ */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;
+  background:color-mix(in srgb,var(--surface) 88%,transparent);
+  -webkit-backdrop-filter:saturate(180%) blur(18px);backdrop-filter:saturate(180%) blur(18px);
+  border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.navwrap{position:relative;display:flex;flex:1}
+.navbtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0 6px;
+  color:var(--muted);font:600 10px/1 var(--sans)}
+.navbtn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.navbtn[aria-current="page"]{color:var(--ink)}
+.badge{position:absolute;top:4px;left:50%;margin-left:6px;
+  min-width:16px;height:16px;padding:0 4px;border-radius:99px;background:var(--gold);color:#22190A;
+  font:700 10px/16px var(--mono);text-align:center;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hdr">
+    <div class="hdr-top">
+      <h1 class="wordmark">Agentic AI Summit <span>2026</span></h1>
+      <div class="hdr-spacer"></div>
+      <button class="iconbtn" id="btn-search" aria-label="Search sessions">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
+      <button class="iconbtn" id="btn-theme" aria-label="Toggle light or dark theme">
+        <svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+      </button>
+    </div>
+    <div class="days" id="days" role="group" aria-label="Choose day"></div>
+    <div class="tracks" id="tracks" role="group" aria-label="Filter by stage"></div>
+    <div class="searchwrap" id="searchwrap">
+      <input class="search" id="search" type="search" placeholder="Search sessions, speakers, companies…" autocomplete="off">
+    </div>
+  </header>
+  <main id="main"></main>
+</div>
+
+<nav class="nav" id="nav" aria-label="Views">
+  <div class="navwrap">
+    <button class="navbtn" data-view="agenda" aria-current="page">
+      <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+      Agenda
+    </button>
+  </div>
+  <div class="navwrap">
+    <button class="navbtn" data-view="mine">
+      <svg viewBox="0 0 24 24"><path d="m12 3.6 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.8l5.9-.9Z"/></svg>
+      My Schedule
+    </button>
+    <span class="badge hide" id="badge">0</span>
+  </div>
+  <div class="navwrap">
+    <button class="navbtn" data-view="map">
+      <svg viewBox="0 0 24 24"><path d="m9 4 6 2.5L21 4v14l-6 2.5L9 18l-6 2.5V6.5Z"/><path d="M9 4v14M15 6.5v14"/></svg>
+      Venue
+    </button>
+  </div>
+</nav>
+
+<script>var MAP_SRC = "map.jpg"; /* build_artifact.py swaps in a data URI */</script>
+<script src="data.js"></script>
+<script>
+(function(){
+"use strict";
+
+const STORE = 'aisummit2026.saved';
+const THEME = 'aisummit2026.theme';
+const $  = s => document.querySelector(s);
+const el = (t,c) => { const n = document.createElement(t); if (c) n.className = c; return n; };
+const toMin = t => { const [h,m] = t.split(':').map(Number); return h*60 + m; };
+const pad2 = n => String(n).padStart(2,'0');
+const fmt = t => { let [h,m] = t.split(':').map(Number); const ap = h>=12 ? 'PM':'AM';
+  h = h%12 || 12; return h + ':' + pad2(m) + ' ' + ap; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* Stable id per session, and an end time computed from the next block
+   on the same stage+day. The closing item of each track runs 90 min if
+   it is a reception, 60 otherwise. */
+SESSIONS.forEach(s => { s.id = s.stage + '-d' + s.day + '-' + s.start; });
+EVENT.days.forEach(d => Object.keys(STAGES).forEach(st => {
+  const list = SESSIONS.filter(s => s.day === d.n && s.stage === st)
+                       .sort((a,b) => toMin(a.start) - toMin(b.start));
+  list.forEach((s,i) => {
+    if (i+1 < list.length) { s.end = list[i+1].start; return; }
+    const m = toMin(s.start) + (/Reception/i.test(s.title) ? 90 : 60);
+    s.end = pad2(Math.floor(m/60)) + ':' + pad2(m%60);
+  });
+}));
+const STAGE_ORDER = Object.keys(STAGES);
+SESSIONS.sort((a,b) => a.day - b.day || toMin(a.start) - toMin(b.start)
+  || STAGE_ORDER.indexOf(a.stage) - STAGE_ORDER.indexOf(b.stage));
+
+/* ═══ State ═══════════════════════════════════════════════════════ */
+let saved = new Set();
+try { saved = new Set(JSON.parse(localStorage.getItem(STORE) || '[]')); } catch(e){}
+const persist = () => { try { localStorage.setItem(STORE, JSON.stringify([...saved])); } catch(e){} };
+
+const state = { view:'agenda', day:1, track:'all', q:'', open:new Set() };
+
+/* Current wall-clock time in Berkeley, whatever the phone is set to. */
+const laNow = () => {
+  const p = new Intl.DateTimeFormat('en-CA', { timeZone:'America/Los_Angeles',
+    year:'numeric', month:'2-digit', day:'2-digit',
+    hour:'2-digit', minute:'2-digit', hour12:false })
+    .formatToParts(new Date())
+    .reduce((a,x) => (a[x.type] = x.value, a), {});
+  return { iso: p.year + '-' + p.month + '-' + p.day, min: (+p.hour % 24)*60 + (+p.minute) };
+};
+const today = EVENT.days.find(d => d.iso === laNow().iso);
+if (today) state.day = today.n;
+
+const t0 = localStorage.getItem(THEME);
+if (t0) document.documentElement.setAttribute('data-theme', t0);
+$('#btn-theme').addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme')
+    || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem(THEME, next);
+});
+
+const ICON = {
+  star:'<svg viewBox="0 0 24 24"><path d="m12 3.6 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.8l5.9-.9Z"/></svg>',
+  pin:'<svg viewBox="0 0 24 24"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg>',
+  chev:'<svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>',
+  warn:'<svg viewBox="0 0 24 24"><path d="M12 4 2.8 20h18.4Z"/><path d="M12 10.5v3.6M12 17.3v.1"/></svg>',
+  walk:'<svg viewBox="0 0 24 24"><circle cx="13" cy="4.2" r="1.8"/><path d="m10 21 2.2-6L9 12.4V8.6l4-1.4 2.6 3.4 2.9 1"/><path d="m9 12.4-2.6 4"/></svg>',
+  cal:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+  trash:'<svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>',
+};
+
+/* ═══ Header controls ═════════════════════════════════════════════ */
+const daysEl = $('#days'), tracksEl = $('#tracks');
+
+EVENT.days.forEach(d => {
+  const b = el('button','day');
+  b.dataset.day = d.n;
+  b.innerHTML = '<b>' + d.label + '</b><small>Aug ' + Number(d.iso.slice(-2)) + '</small>';
+  b.onclick = () => { state.day = d.n; render(); };
+  daysEl.appendChild(b);
+});
+
+function trackChips(){
+  tracksEl.textContent = '';
+  const all = el('button','chip all');
+  all.dataset.track = 'all';
+  all.textContent = 'All stages';
+  all.onclick = () => { state.track = 'all'; render(); };
+  tracksEl.appendChild(all);
+  STAGE_ORDER.forEach(k => {
+    if (!SESSIONS.some(s => s.day === state.day && s.stage === k)) return;
+    const b = el('button','chip');
+    b.dataset.track = k;
+    b.style.setProperty('--c', 'var(--s-' + k + ')');
+    b.innerHTML = '<span class="dot"></span>' + STAGES[k].name;
+    b.onclick = () => { state.track = state.track === k ? 'all' : k; render(); };
+    tracksEl.appendChild(b);
+  });
+}
+
+$('#btn-search').addEventListener('click', () => {
+  const w = $('#searchwrap');
+  w.classList.toggle('on');
+  if (w.classList.contains('on')) { $('#search').focus(); }
+  else { $('#search').value = ''; state.q = ''; render(); }
+});
+$('#search').addEventListener('input', e => { state.q = e.target.value.trim().toLowerCase(); render(); });
+
+$('#nav').addEventListener('click', e => {
+  const b = e.target.closest('.navbtn');
+  if (!b) return;
+  state.view = b.dataset.view;
+  window.scrollTo(0,0);
+  render();
+});
+
+/* ═══ Cards ═══════════════════════════════════════════════════════ */
+const KIND = { session:'Talks', panel:'Panel', workshop:'Workshop',
+  fireside:'Fireside', opening:'Opening', spotlight:'Spotlight', break:'Break' };
+
+function haystack(s){
+  return [s.title, s.note || '', STAGES[s.stage].name, STAGES[s.stage].venue]
+    .concat(s.talks.map(t => t[0] + ' ' + t[1] + ' ' + t[2]))
+    .join(' ').toLowerCase();
+}
+
+function whoLine(s){
+  const names = s.talks.filter(t => t[3] !== 'moderator').map(t => t[0]);
+  if (!names.length) return '';
+  const mod = s.talks.find(t => t[3] === 'moderator');
+  return names.map(n => '<b>' + esc(n) + '</b>').join(', ')
+    + (mod ? ' · mod. ' + esc(mod[0]) : '');
+}
+
+function card(s, advisories){
+  const st = STAGES[s.stage];
+  const c = el('article', 'card' + (s.kind === 'break' ? ' brk' : '') + (saved.has(s.id) ? ' saved' : ''));
+  c.style.setProperty('--c', 'var(--s-' + s.stage + ')');
+  if (state.open.has(s.id)) c.dataset.open = '1';
+
+  const now = laNow();
+  const iso = EVENT.days.find(d => d.n === s.day).iso;
+  const live = now.iso === iso && now.min >= toMin(s.start) && now.min < toMin(s.end);
+
+  const main = el('div','card-main');
+  const body = el('div','card-body');
+
+  const eye = el('div','eyebrow');
+  eye.innerHTML = (live ? '<span class="live">Now</span>' : '')
+    + '<span class="stage">' + esc(st.name) + '</span>'
+    + '<span class="kind">' + (KIND[s.kind] || '') + '</span>';
+  body.appendChild(eye);
+
+  const h = el('h3','title');
+  h.textContent = s.title;
+  body.appendChild(h);
+
+  if (s.kind !== 'break') {
+    const w = el('div','where');
+    w.innerHTML = ICON.pin + '<span>' + esc(st.venue) + '</span>';
+    body.appendChild(w);
+  }
+
+  const who = whoLine(s);
+  if (who) { const p = el('div','who'); p.innerHTML = who; body.appendChild(p); }
+  main.appendChild(body);
+
+  const on = saved.has(s.id);
+  const star = el('button','star');
+  star.innerHTML = ICON.star;
+  star.setAttribute('aria-pressed', on ? 'true' : 'false');
+  star.setAttribute('aria-label', (on ? 'Remove ' : 'Add ') + s.title + (on ? ' from' : ' to') + ' my schedule');
+  star.onclick = ev => {
+    ev.stopPropagation();
+    if (saved.has(s.id)) saved.delete(s.id); else saved.add(s.id);
+    persist(); render();
+  };
+  main.appendChild(star);
+  c.appendChild(main);
+
+  if (s.talks.length || s.note) {
+    const n = s.talks.length;
+    const btn = el('button','more');
+    btn.innerHTML = '<span>' + (n ? n + (n === 1 ? ' speaker' : ' speakers') : 'Details') + '</span>' + ICON.chev;
+    btn.setAttribute('aria-expanded', state.open.has(s.id) ? 'true' : 'false');
+    btn.onclick = () => {
+      if (state.open.has(s.id)) state.open.delete(s.id); else state.open.add(s.id);
+      render();
+    };
+    c.appendChild(btn);
+
+    const d = el('div','detail');
+    if (s.note) { const p = el('p','note'); p.textContent = s.note; d.appendChild(p); }
+    s.talks.forEach(t => {
+      const row = el('div','talk');
+      let html = '';
+      if (t[3]) html += '<span class="role' + (t[3] === 'moderator' ? ' mod' : '') + '">' + esc(t[3]) + '</span>';
+      html += '<span class="nm">' + esc(t[0]) + '</span>';
+      if (t[1]) html += '<span class="af">' + esc(t[1]) + '</span>';
+      if (t[2]) html += '<span class="tt">' + esc(t[2]) + '</span>';
+      row.innerHTML = html;
+      d.appendChild(row);
+    });
+    c.appendChild(d);
+  }
+
+  (advisories || []).forEach(a => {
+    const v = el('div','advis ' + a.type);
+    v.innerHTML = (a.type === 'clash' ? ICON.warn : ICON.walk) + '<span>' + esc(a.text) + '</span>';
+    c.appendChild(v);
+  });
+  return c;
+}
+
+function slot(s, advisories){
+  const wrap = el('div','slot');
+  const r = el('div','rail');
+  r.innerHTML = fmt(s.start) + '<span class="to">' + fmt(s.end) + '</span>';
+  wrap.appendChild(r);
+  wrap.appendChild(card(s, advisories));
+  return wrap;
+}
+
+/* ═══ Views ═══════════════════════════════════════════════════════ */
+function viewAgenda(main){
+  let list = SESSIONS.filter(s => s.day === state.day);
+  if (state.track !== 'all') list = list.filter(s => s.stage === state.track);
+  if (state.q) list = list.filter(s => haystack(s).indexOf(state.q) !== -1);
+
+  if (!list.length) {
+    const e = el('div','empty');
+    e.innerHTML = '<p>Nothing matches <b>' + esc(state.q) + '</b>. Try a speaker, a company, or a topic.</p>';
+    main.appendChild(e);
+    return;
+  }
+  const d = EVENT.days.find(x => x.n === state.day);
+  const hd = el('div','dayhead');
+  hd.textContent = d.date;
+  main.appendChild(hd);
+  list.forEach(s => main.appendChild(slot(s)));
+}
+
+function viewMine(main){
+  const picks = SESSIONS.filter(s => saved.has(s.id));
+
+  if (!picks.length) {
+    const e = el('div','empty');
+    e.innerHTML = ICON.star
+      + '<p>Tap the <span class="k">star</span> on any session to build your two days. '
+      + 'Clashes and cross-campus walks get flagged here.</p>';
+    main.appendChild(e);
+    return;
+  }
+
+  const tools = el('div','toolbar');
+  const ics = el('button','tbtn');
+  ics.innerHTML = ICON.cal + 'Add to calendar';
+  ics.onclick = downloadICS;
+  const clr = el('button','tbtn danger');
+  clr.innerHTML = ICON.trash + 'Clear all';
+  clr.onclick = () => {
+    if (confirm('Remove all ' + picks.length + ' saved sessions?')) { saved.clear(); persist(); render(); }
+  };
+  tools.append(ics, clr);
+  main.appendChild(tools);
+
+  EVENT.days.forEach(d => {
+    const day = picks.filter(s => s.day === d.n);
+    if (!day.length) return;
+    const hd = el('div','dayhead');
+    hd.textContent = d.date;
+    main.appendChild(hd);
+
+    day.forEach((s,i) => {
+      const adv = [];
+
+      /* Overlaps with another pick the same day. Breaks are excluded —
+         lunch is movable, a talk is not. */
+      if (s.kind !== 'break') {
+        const clash = day.filter(o => o !== s && o.kind !== 'break'
+          && toMin(o.start) < toMin(s.end) && toMin(s.start) < toMin(o.end));
+        if (clash.length) {
+          adv.push({ type:'clash', text:'Overlaps ' + clash.map(o =>
+            o.title.replace(/^Session \d+:\s*/,'') + ' (' + STAGES[o.stage].name + ')').join(', ') });
+        }
+      }
+
+      /* Building change from the previous pick. Zellerbach to MLK means
+         crossing Lower Sproul. */
+      const prev = day[i-1];
+      if (prev && STAGES[prev.stage].building !== STAGES[s.stage].building) {
+        const slack = toMin(s.start) - toMin(prev.end);
+        let txt = '~5 min walk from ' + STAGES[prev.stage].building + ' to ' + STAGES[s.stage].building;
+        if (slack < 0) txt += ' — sessions overlap, you will miss the start';
+        else if (slack < 5) txt += ' — back to back, no slack';
+        else if (slack < 15) txt += ' — ' + slack + ' min gap';
+        adv.push({ type:'walk', text: txt });
+      }
+
+      main.appendChild(slot(s, adv));
+    });
+  });
+}
+
+function viewMap(main){
+  const w = el('div','mapwrap');
+
+  const fig = el('figure','mapfig');
+  const sc = el('div','mapscroll');
+  const img = el('img');
+  img.src = MAP_SRC;
+  img.alt = 'Venue map of the Lower Sproul area at UC Berkeley, showing Zellerbach Auditorium, '
+    + 'Zellerbach Playhouse, the Martin Luther King Jr. Building and Eshleman Hall.';
+  sc.appendChild(img);
+  fig.appendChild(sc);
+  const cap = el('figcaption');
+  cap.textContent = 'Lower Sproul — swipe the map to pan';
+  fig.appendChild(cap);
+  w.appendChild(fig);
+
+  const ul = el('ul','legend');
+  STAGE_ORDER.forEach(k => {
+    const li = el('li');
+    li.style.setProperty('--c', 'var(--s-' + k + ')');
+    li.innerHTML = '<span class="pin"></span><div><div class="lname">' + esc(STAGES[k].name)
+      + ' Stage</div><div class="lwhere">' + esc(STAGES[k].venue) + '</div></div>';
+    ul.appendChild(li);
+  });
+  w.appendChild(ul);
+
+  const notes = el('ul','notes');
+  VENUE_NOTES.forEach(pair => {
+    const li = el('li');
+    li.innerHTML = '<div class="nk">' + esc(pair[0]) + '</div><div class="nv">' + esc(pair[1]) + '</div>';
+    notes.appendChild(li);
+  });
+  w.appendChild(notes);
+
+  const src = el('p','src');
+  src.innerHTML = 'Schedule from rdi.berkeley.edu · stage colours match the venue map pins. '
+    + 'Times are Berkeley local (PT). Your picks are stored on this device only.';
+  w.appendChild(src);
+
+  main.appendChild(w);
+}
+
+/* ═══ Calendar export ═════════════════════════════════════════════ */
+function downloadICS(){
+  const picks = SESSIONS.filter(s => saved.has(s.id));
+  if (!picks.length) return;
+  /* August in Berkeley is PDT, UTC-7. */
+  const utc = (iso, hm) => {
+    const [y,m,d] = iso.split('-').map(Number);
+    const [H,M] = hm.split(':').map(Number);
+    return new Date(Date.UTC(y, m-1, d, H+7, M)).toISOString()
+      .replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+  };
+  const q = s => String(s).replace(/([\\;,])/g,'\\$1').replace(/\n/g,'\\n');
+  const out = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Agentic AI Summit 2026//EN','CALSCALE:GREGORIAN'];
+  picks.forEach(s => {
+    const day = EVENT.days.find(d => d.n === s.day);
+    const st = STAGES[s.stage];
+    const desc = s.talks.map(t => t[0] + (t[1] ? ' — ' + t[1] : '') + (t[2] ? '\n' + t[2] : '')).join('\n\n');
+    out.push('BEGIN:VEVENT',
+      'UID:' + s.id + '@agentic-ai-summit-2026',
+      'DTSTAMP:' + utc(day.iso,'00:00'),
+      'DTSTART:' + utc(day.iso, s.start),
+      'DTEND:'   + utc(day.iso, s.end),
+      'SUMMARY:' + q(s.title),
+      'LOCATION:' + q(st.venue + ', UC Berkeley'),
+      'DESCRIPTION:' + q(st.name + ' Stage' + (desc ? '\n\n' + desc : '')),
+      'END:VEVENT');
+  });
+  out.push('END:VCALENDAR');
+  const blob = new Blob([out.join('\r\n')], { type:'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = el('a');
+  a.href = url;
+  a.download = 'agentic-ai-summit-2026.ics';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+/* ═══ Render ══════════════════════════════════════════════════════ */
+function render(){
+  const main = $('#main');
+  main.textContent = '';
+
+  const agenda = state.view === 'agenda';
+  daysEl.classList.toggle('hide', !agenda);
+  tracksEl.classList.toggle('hide', !agenda);
+  $('#searchwrap').classList.toggle('hide', !agenda);
+
+  if (agenda) {
+    trackChips();
+    [...daysEl.children].forEach(b =>
+      b.setAttribute('aria-pressed', +b.dataset.day === state.day ? 'true' : 'false'));
+    [...tracksEl.children].forEach(b =>
+      b.setAttribute('aria-pressed', b.dataset.track === state.track ? 'true' : 'false'));
+  }
+
+  [...document.querySelectorAll('.navbtn')].forEach(b => {
+    if (b.dataset.view === state.view) b.setAttribute('aria-current','page');
+    else b.removeAttribute('aria-current');
+  });
+
+  const badge = $('#badge');
+  badge.textContent = saved.size;
+  badge.classList.toggle('hide', saved.size === 0);
+
+  if (agenda) viewAgenda(main);
+  else if (state.view === 'mine') viewMine(main);
+  else viewMap(main);
+}
+
+render();
+
+/* Keep the "Now" pill honest while the app sits open. */
+setInterval(() => { if (state.view !== 'map') render(); }, 60000);
+
+/* sw:start — build_artifact.py strips this block; there is no
+   same-origin sw.js on the artifact host. */
+if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+  navigator.serviceWorker.register('sw.js').catch(function(){});
+}
+/* sw:end */
+})();
+</script>
+</body>
+</html>
