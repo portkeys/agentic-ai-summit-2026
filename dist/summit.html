@@ -153,11 +153,16 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .card[data-open="1"] .more svg{transform:rotate(180deg)}
 .detail{display:none;padding:2px 12px 12px;border-top:1px solid var(--line)}
 .card[data-open="1"] .detail{display:block}
-.talk{display:flex;flex-direction:column;gap:2px;padding:9px 0;border-bottom:1px solid var(--line)}
-.talk:last-child{border-bottom:0;padding-bottom:2px}
-.talk .role{font:650 9.5px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;
-  color:var(--c);margin-bottom:2px}
-.talk .role.mod{color:var(--muted)}
+/* A session runs as timed sub-blocks; the header carries the block's own
+   start so you can tell when a given talk actually begins. */
+.grp{display:flex;align-items:baseline;gap:8px;padding:12px 0 4px;
+  border-top:1px solid var(--line)}
+.grp:first-child{border-top:0;padding-top:7px}
+.grp .gt{font:600 11.5px/1 var(--mono);font-variant-numeric:tabular-nums;
+  color:var(--ink-2);letter-spacing:-.02em}
+.grp .gl{font:650 9.5px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--c)}
+.grp.mod .gl{color:var(--muted)}
+.talk{display:flex;flex-direction:column;gap:2px;padding:7px 0 3px}
 .talk .nm{font-size:13.5px;font-weight:640;letter-spacing:-.008em}
 .talk .af{font-size:12px;color:var(--muted);line-height:1.4}
 .talk .tt{font-size:13px;color:var(--ink-2);line-height:1.45;margin-top:3px;font-style:italic}
@@ -287,7 +292,9 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
    https://rdi.berkeley.edu/events/agentic-ai-summit-2026
    Do not edit by hand; re-run the scraper instead.
 
-   Talk tuple: [name, affiliation, talkTitle, role] */
+   Talk tuple: [name, affiliation, talkTitle, group, startTime]
+   `group` is the sub-block label as printed ("Keynote", "Featured Talks",
+   "Panelists", "Moderator"); `startTime` is that sub-block's own start. */
 
 const EVENT = {
   name: 'Agentic AI Summit 2026',
@@ -319,140 +326,140 @@ const SESSIONS = [
 
 /* ── PLENARY · SATURDAY ─────────────────────── */
 { day:1, stage:"plenary", start:"09:15", kind:"opening", title:"Opening Remarks", talks:[
-  ["Rich Lyons", "Chancellor, UC Berkeley", "", ""],
-  ["Dawn Song", "Professor, UC Berkeley; Co-Director, Berkeley RDI; VP of AI Research, Meta Superintelligence Labs", "", ""],
+  ["Rich Lyons", "Chancellor, UC Berkeley", "", "", "09:15"],
+  ["Dawn Song", "Professor, UC Berkeley; Co-Director, Berkeley RDI; VP of AI Research, Meta Superintelligence Labs", "", "", "09:15"],
 ]},
 { day:1, stage:"plenary", start:"09:30", kind:"session", title:"Session 1: Agentic AI Infrastructure & Platform", talks:[
-  ["Peter DeSantis", "SVP, Foundational AI Models, Custom Silicon, Quantum Computing, Amazon", "Constraint-Driven Innovation: A Look at the AI Systems Problem", "opening keynote"],
-  ["Saurabh Tiwary", "Vice President, Google DeepMind", "From Models to Agents to Discovery: Building the Full Stack of Agentic AI", ""],
-  ["Jonathan Cohen", "VP of Applied Research, Nvidia; Academy Scientific and Technical Award Winner", "Accelerated Computing for Agentic AI", ""],
-  ["Chuan Li", "Chief Scientific Officer, Lambda", "A Lab Notebook for Agents", ""],
+  ["Peter DeSantis", "SVP, Foundational AI Models, Custom Silicon, Quantum Computing, Amazon", "Constraint-Driven Innovation: A Look at the AI Systems Problem", "Opening Keynote", "09:30"],
+  ["Saurabh Tiwary", "Vice President, Google DeepMind", "From Models to Agents to Discovery: Building the Full Stack of Agentic AI", "Featured Talks", "09:50"],
+  ["Jonathan Cohen", "VP of Applied Research, Nvidia; Academy Scientific and Technical Award Winner", "Accelerated Computing for Agentic AI", "Featured Talks", "09:50"],
+  ["Chuan Li", "Chief Scientific Officer, Lambda", "A Lab Notebook for Agents", "Featured Talks", "09:50"],
 ]},
 { day:1, stage:"plenary", start:"10:20", kind:"panel", title:"Panel: Agentic AI Infrastructure & Platform", talks:[
-  ["Peter DeSantis", "", "", "panelist"],
-  ["Saurabh Tiwary", "", "", "panelist"],
-  ["Jonathan Cohen", "", "", "panelist"],
-  ["Chuan Li", "", "", "panelist"],
-  ["Todd Graham", "Managing Partner, M12", "", "moderator"],
+  ["Peter DeSantis", "", "", "Panelists", "10:20"],
+  ["Saurabh Tiwary", "", "", "Panelists", "10:20"],
+  ["Jonathan Cohen", "", "", "Panelists", "10:20"],
+  ["Chuan Li", "", "", "Panelists", "10:20"],
+  ["Todd Graham", "Managing Partner, M12", "", "Moderator", "10:20"],
 ]},
 { day:1, stage:"plenary", start:"10:45", kind:"fireside", title:"Fireside Chat: RSI: Demystifying the \"Foom\"", talks:[
-  ["Dawn Song", "Professor, UC Berkeley; Co-Director, Berkeley RDI; VP of AI Research, Meta Superintelligence Labs", "", ""],
-  ["Jasjeet Sekhon", "Chief Strategy Officer, Google DeepMind", "", ""],
+  ["Dawn Song", "Professor, UC Berkeley; Co-Director, Berkeley RDI; VP of AI Research, Meta Superintelligence Labs", "", "Featured Talks", "10:45"],
+  ["Jasjeet Sekhon", "Chief Strategy Officer, Google DeepMind", "", "Featured Talks", "10:45"],
 ]},
 { day:1, stage:"plenary", start:"11:10", kind:"session", title:"Session 2: Future of Software Engineering", talks:[
-  ["Peter Steinberger", "Creator of OpenClaw, OpenAI", "", ""],
-  ["Ryan Lopopolo", "Principal Engineer, Agentic Google Cloud Platform; Previously Led Dark Factory at OpenAI", "Harness Engineering: How to Build Software When Humans Steer and Agents Execute", ""],
-  ["Michele Catasta", "President, Replit", "Continual Learning for Agents", ""],
-  ["Alex Graveley", "Director, Comet, Perplexity AI", "Omniscient Agents", ""],
+  ["Peter Steinberger", "Creator of OpenClaw, OpenAI", "", "Featured Talks", "11:10"],
+  ["Ryan Lopopolo", "Principal Engineer, Agentic Google Cloud Platform; Previously Led Dark Factory at OpenAI", "Harness Engineering: How to Build Software When Humans Steer and Agents Execute", "Featured Talks", "11:10"],
+  ["Michele Catasta", "President, Replit", "Continual Learning for Agents", "Featured Talks", "11:10"],
+  ["Alex Graveley", "Director, Comet, Perplexity AI", "Omniscient Agents", "Featured Talks", "11:10"],
 ]},
 { day:1, stage:"plenary", start:"11:35", kind:"panel", title:"Panel: Future of Software Engineering", talks:[
-  ["Peter Steinberger", "", "", "panelist"],
-  ["Ryan Lopopolo", "", "", "panelist"],
-  ["Michele Catasta", "", "", "panelist"],
-  ["Alex Graveley", "", "", "panelist"],
-  ["Anjney Midha", "Founder, AMP PBC", "", "moderator"],
+  ["Peter Steinberger", "", "", "Panelists", "11:35"],
+  ["Ryan Lopopolo", "", "", "Panelists", "11:35"],
+  ["Michele Catasta", "", "", "Panelists", "11:35"],
+  ["Alex Graveley", "", "", "Panelists", "11:35"],
+  ["Anjney Midha", "Founder, AMP PBC", "", "Moderator", "11:35"],
 ]},
 { day:1, stage:"plenary", start:"12:00", kind:"break", title:"Lunch & Poster Presentations", talks:[]},
 { day:1, stage:"plenary", start:"13:30", kind:"session", title:"Session 3: Agentic AI Foundational Capabilities", talks:[
-  ["Dawn Song", "Professor, UC Berkeley; Co-Director, Berkeley RDI; VP of AI Research, Meta Superintelligence Labs", "Towards Building Safe and Secure Agentic AI", "keynote"],
-  ["Wojciech Zaremba", "Co-Founder, OpenAI", "Building Resilience for the Intelligence Age", ""],
-  ["Jerry Tworek", "CEO, Core Automation; Former VP of Research at OpenAI", "Opportunities and Challenges for Long-Horizon Agents", ""],
-  ["Oriol Vinyals", "VP of Research, Google DeepMind", "", ""],
-  ["Dan Roth", "Chief AI Scientist, Oracle; Professor, UPenn", "AI for Data and Data for AI", ""],
-  ["Weizhu Chen", "Technical Fellow & CVP, Microsoft AI", "Continuous Model Improvement", ""],
+  ["Dawn Song", "Professor, UC Berkeley; Co-Director, Berkeley RDI; VP of AI Research, Meta Superintelligence Labs", "Towards Building Safe and Secure Agentic AI", "Keynote", "13:30"],
+  ["Wojciech Zaremba", "Co-Founder, OpenAI", "Building Resilience for the Intelligence Age", "Featured Talks", "13:50"],
+  ["Jerry Tworek", "CEO, Core Automation; Former VP of Research at OpenAI", "Opportunities and Challenges for Long-Horizon Agents", "Featured Talks", "13:50"],
+  ["Oriol Vinyals", "VP of Research, Google DeepMind", "", "Featured Talks", "13:50"],
+  ["Dan Roth", "Chief AI Scientist, Oracle; Professor, UPenn", "AI for Data and Data for AI", "Featured Talks", "13:50"],
+  ["Weizhu Chen", "Technical Fellow & CVP, Microsoft AI", "Continuous Model Improvement", "Featured Talks", "13:50"],
 ]},
 { day:1, stage:"plenary", start:"14:35", kind:"panel", title:"Panel: Agentic AI Foundational Capabilities", talks:[
-  ["Dawn Song", "", "", "panelist"],
-  ["Wojciech Zaremba", "", "", "panelist"],
-  ["Jerry Tworek", "", "", "panelist"],
-  ["Oriol Vinyals", "", "", "panelist"],
-  ["Dan Roth", "", "", "panelist"],
-  ["Weizhu Chen", "", "", "panelist"],
-  ["Maxwell Zeff", "Senior Writer, Wired", "", "moderator"],
+  ["Dawn Song", "", "", "Panelists", "14:35"],
+  ["Wojciech Zaremba", "", "", "Panelists", "14:35"],
+  ["Jerry Tworek", "", "", "Panelists", "14:35"],
+  ["Oriol Vinyals", "", "", "Panelists", "14:35"],
+  ["Dan Roth", "", "", "Panelists", "14:35"],
+  ["Weizhu Chen", "", "", "Panelists", "14:35"],
+  ["Maxwell Zeff", "Senior Writer, Wired", "", "Moderator", "14:35"],
 ]},
 { day:1, stage:"plenary", start:"15:10", kind:"session", title:"Session 4: Robotics & World Models", talks:[
-  ["Sergey Levine", "Co-Founder, Physical Intelligence; Professor, UC Berkeley", "Robot Foundation Models", ""],
-  ["Jim Fan", "Director of Robotics & Distinguished Scientist, Nvidia", "Robotics: Endgame", ""],
-  ["Michael Spranger", "President, Sony AI", "From Games to the Real World: How Reinforcement Learning Is Powering Performance and Fun", ""],
-  ["Anastasis Germanidis", "Co-Founder/Co-CEO, Runway", "Real-World Superintelligence", ""],
-  ["Wei Zhan", "Chief Scientist, Applied Intuition", "E2E Autonomy Without Imitation", ""],
+  ["Sergey Levine", "Co-Founder, Physical Intelligence; Professor, UC Berkeley", "Robot Foundation Models", "Featured Talks", "15:10"],
+  ["Jim Fan", "Director of Robotics & Distinguished Scientist, Nvidia", "Robotics: Endgame", "Featured Talks", "15:10"],
+  ["Michael Spranger", "President, Sony AI", "From Games to the Real World: How Reinforcement Learning Is Powering Performance and Fun", "Featured Talks", "15:10"],
+  ["Anastasis Germanidis", "Co-Founder/Co-CEO, Runway", "Real-World Superintelligence", "Featured Talks", "15:10"],
+  ["Wei Zhan", "Chief Scientist, Applied Intuition", "E2E Autonomy Without Imitation", "Featured Talks", "15:10"],
 ]},
 { day:1, stage:"plenary", start:"15:55", kind:"panel", title:"Panel: Robotics & World Models", talks:[
-  ["Sergey Levine", "", "", "panelist"],
-  ["Jim Fan", "", "", "panelist"],
-  ["Michael Spranger", "", "", "panelist"],
-  ["Anastasis Germanidis", "", "", "panelist"],
-  ["Wei Zhan", "", "", "panelist"],
-  ["Guru Chahal", "Partner, Lightspeed Venture Partners", "", "moderator"],
+  ["Sergey Levine", "", "", "Panelists", "15:55"],
+  ["Jim Fan", "", "", "Panelists", "15:55"],
+  ["Michael Spranger", "", "", "Panelists", "15:55"],
+  ["Anastasis Germanidis", "", "", "Panelists", "15:55"],
+  ["Wei Zhan", "", "", "Panelists", "15:55"],
+  ["Guru Chahal", "Partner, Lightspeed Venture Partners", "", "Moderator", "15:55"],
 ]},
 { day:1, stage:"plenary", start:"16:20", kind:"break", title:"Break", talks:[]},
 { day:1, stage:"plenary", start:"16:30", kind:"panel", title:"Panel: Agentic AI in Capital Markets", talks:[
-  ["Jeff Wecker", "CTO, Two Sigma", "", ""],
-  ["Jen Allum", "SVP, Co-Head of GenAI, The D. E. Shaw Group", "", ""],
-  ["Ali Nazari", "Head of Deep Learning Research, Susquehanna International Group", "", ""],
-  ["Li Deng", "Chief AI Officer, Vatic Investments; Former Chief AI Officer, Citadel", "", ""],
-  ["Bradley Olson", "Technology Editor, WSJ", "", "moderator"],
+  ["Jeff Wecker", "CTO, Two Sigma", "", "", "16:30"],
+  ["Jen Allum", "SVP, Co-Head of GenAI, The D. E. Shaw Group", "", "", "16:30"],
+  ["Ali Nazari", "Head of Deep Learning Research, Susquehanna International Group", "", "", "16:30"],
+  ["Li Deng", "Chief AI Officer, Vatic Investments; Former Chief AI Officer, Citadel", "", "", "16:30"],
+  ["Bradley Olson", "Technology Editor, WSJ", "", "Moderator", "16:30"],
 ]},
 { day:1, stage:"plenary", start:"17:00", kind:"fireside", title:"Fireside Chat", talks:[
-  ["Andrew Ng", "Founder, DeepLearning.AI", "", ""],
-  ["Alfred Lin", "General Partner, Sequoia Capital", "", ""],
+  ["Andrew Ng", "Founder, DeepLearning.AI", "", "Featured Talks", "17:00"],
+  ["Alfred Lin", "General Partner, Sequoia Capital", "", "Featured Talks", "17:00"],
 ]},
 { day:1, stage:"plenary", start:"17:30", kind:"break", title:"Reception & Poster Presentations", talks:[]},
 
 /* ── PLENARY · SUNDAY ─────────────────────── */
 { day:2, stage:"plenary", start:"09:30", kind:"opening", title:"Opening Remarks", talks:[
-  ["Jennifer Chayes", "Dean of CDSS, UC Berkeley", "", ""],
-  ["Dawn Song", "Professor, UC Berkeley; Co-Director, Berkeley RDI; VP of AI Research, Meta Superintelligence Labs", "", ""],
+  ["Jennifer Chayes", "Dean of CDSS, UC Berkeley", "", "", "09:30"],
+  ["Dawn Song", "Professor, UC Berkeley; Co-Director, Berkeley RDI; VP of AI Research, Meta Superintelligence Labs", "", "", "09:30"],
 ]},
 { day:2, stage:"plenary", start:"09:40", kind:"session", title:"Session 1: Enterprise AI", talks:[
-  ["Rao Surapaneni", "VP/GM AI Search & Specialized AI, Google Cloud", "Enterprise AI - Agent Governance", ""],
-  ["Adarsh Hiremath", "Co-CEO, Mercor", "Enterprise AI", ""],
-  ["Duncan Lennox", "Chief Product & Technology Officer, HubSpot", "Off-the-Shelf AI Hit a Wall. Here's What HubSpot Did to Solve It.", ""],
+  ["Rao Surapaneni", "VP/GM AI Search & Specialized AI, Google Cloud", "Enterprise AI - Agent Governance", "Featured Talks", "09:40"],
+  ["Adarsh Hiremath", "Co-CEO, Mercor", "Enterprise AI", "Featured Talks", "09:40"],
+  ["Duncan Lennox", "Chief Product & Technology Officer, HubSpot", "Off-the-Shelf AI Hit a Wall. Here's What HubSpot Did to Solve It.", "Featured Talks", "09:40"],
 ]},
 { day:2, stage:"plenary", start:"10:15", kind:"panel", title:"Panel: Enterprise AI", talks:[
-  ["Rao Surapaneni", "", "", "panelist"],
-  ["Adarsh Hiremath", "", "", "panelist"],
-  ["Duncan Lennox", "", "", "panelist"],
-  ["Anahita Tafvizi", "Chief Data & AI Officer, Snowflake", "", "panelist"],
-  ["Surojit Chatterjee", "Founder/CEO, Ema", "", "panelist"],
-  ["Aaron Jacobson", "GP, NEA", "", "moderator"],
+  ["Rao Surapaneni", "", "", "Panelists", "10:15"],
+  ["Adarsh Hiremath", "", "", "Panelists", "10:15"],
+  ["Duncan Lennox", "", "", "Panelists", "10:15"],
+  ["Anahita Tafvizi", "Chief Data & AI Officer, Snowflake", "", "Panelists", "10:15"],
+  ["Surojit Chatterjee", "Founder/CEO, Ema", "", "Panelists", "10:15"],
+  ["Aaron Jacobson", "GP, NEA", "", "Moderator", "10:15"],
 ]},
 { day:2, stage:"plenary", start:"10:45", kind:"break", title:"Break", talks:[]},
 { day:2, stage:"plenary", start:"11:05", kind:"fireside", title:"Fireside Chat", talks:[
-  ["Ali Ghodsi", "Co-Founder/CEO, Databricks", "", ""],
-  ["Andy Konwinski", "Co-Founder, Databricks; Perplexity; Laude Ventures", "", ""],
+  ["Ali Ghodsi", "Co-Founder/CEO, Databricks", "", "Featured Talks", "11:05"],
+  ["Andy Konwinski", "Co-Founder, Databricks; Perplexity; Laude Ventures", "", "Featured Talks", "11:05"],
 ]},
 { day:2, stage:"plenary", start:"11:30", kind:"break", title:"Lunch & Poster Presentations", talks:[]},
 { day:2, stage:"plenary", start:"13:00", kind:"session", title:"Session 2: Frontier Research", talks:[
-  ["Richard Socher", "Founder/CEO, Recursive Superintelligence", "The Eureka Machine: Recursive Superintelligence for Science", ""],
-  ["Ed Chi", "VP of Research, Google DeepMind", "The Future of Personalized Universal Agents", ""],
-  ["Ekin Dogus Cubuk", "Co-Founder, Periodic Labs", "Combining Experiments, Large Language Models, and Theory to Discover Quantum Materials", ""],
-  ["Andi Peng", "Co-Founder, Humans&", "Collaborative AI in the Era of Agents", ""],
-  ["Igor Babuschkin", "Co-Founder/CEO, River AI", "Personal AI and Continual Learning: New Frontiers in Agentic AI", ""],
+  ["Richard Socher", "Founder/CEO, Recursive Superintelligence", "The Eureka Machine: Recursive Superintelligence for Science", "Featured Talks", "13:00"],
+  ["Ed Chi", "VP of Research, Google DeepMind", "The Future of Personalized Universal Agents", "Featured Talks", "13:00"],
+  ["Ekin Dogus Cubuk", "Co-Founder, Periodic Labs", "Combining Experiments, Large Language Models, and Theory to Discover Quantum Materials", "Featured Talks", "13:00"],
+  ["Andi Peng", "Co-Founder, Humans&", "Collaborative AI in the Era of Agents", "Featured Talks", "13:00"],
+  ["Igor Babuschkin", "Co-Founder/CEO, River AI", "Personal AI and Continual Learning: New Frontiers in Agentic AI", "Featured Talks", "13:00"],
 ]},
 { day:2, stage:"plenary", start:"13:40", kind:"panel", title:"Panel: Frontier Research", talks:[
-  ["Richard Socher", "", "", "panelist"],
-  ["Ed Chi", "", "", "panelist"],
-  ["Ekin Dogus Cubuk", "", "", "panelist"],
-  ["Andi Peng", "", "", "panelist"],
-  ["Igor Babuschkin", "Co-Founder/CEO, River AI", "", "moderator"],
+  ["Richard Socher", "", "", "Panelists", "13:40"],
+  ["Ed Chi", "", "", "Panelists", "13:40"],
+  ["Ekin Dogus Cubuk", "", "", "Panelists", "13:40"],
+  ["Andi Peng", "", "", "Panelists", "13:40"],
+  ["Igor Babuschkin", "Co-Founder/CEO, River AI", "", "Moderator", "13:40"],
 ]},
 { day:2, stage:"plenary", start:"14:15", kind:"panel", title:"Panel: Agentic AI Developer Platforms", talks:[
-  ["Matt White", "Former Global CTO of AI, Linux Foundation; CTO, PyTorch Foundation", "", "panelist"],
-  ["Dima Dmytro Dzhulgakov", "Co-Founder/CTO, Fireworks AI", "", "panelist"],
-  ["Ivan Burazin", "Co-Founder/CEO, Daytona", "", "panelist"],
-  ["Mazin Gilbert", "Executive Director, Agentic AI Foundation & Linux Foundation", "", "panelist"],
-  ["Megan Morrone", "Editor of Technology, Axios", "", "moderator"],
+  ["Matt White", "Former Global CTO of AI, Linux Foundation; CTO, PyTorch Foundation", "", "Panelists", "14:15"],
+  ["Dima Dmytro Dzhulgakov", "Co-Founder/CTO, Fireworks AI", "", "Panelists", "14:15"],
+  ["Ivan Burazin", "Co-Founder/CEO, Daytona", "", "Panelists", "14:15"],
+  ["Mazin Gilbert", "Executive Director, Agentic AI Foundation & Linux Foundation", "", "Panelists", "14:15"],
+  ["Megan Morrone", "Editor of Technology, Axios", "", "Moderator", "14:15"],
 ]},
 { day:2, stage:"plenary", start:"14:50", kind:"session", title:"Session 4: Agentic AI in Finance & Legal", talks:[
-  ["Milind Naphade", "SVP, AI Foundations, Capital One", "Advancing the State of the Art: The Frontier of Enterprise Agentic AI", ""],
-  ["Nikhil Chandhok", "Chief Product & Technology Officer, Circle", "Building Infrastructure for the Agentic Economy", ""],
-  ["Faraz Shafiq", "Head of AI, Wells Fargo", "Reimagining Banking in the AI Era", ""],
+  ["Milind Naphade", "SVP, AI Foundations, Capital One", "Advancing the State of the Art: The Frontier of Enterprise Agentic AI", "Featured Talks", "14:50"],
+  ["Nikhil Chandhok", "Chief Product & Technology Officer, Circle", "Building Infrastructure for the Agentic Economy", "Featured Talks", "14:50"],
+  ["Faraz Shafiq", "Head of AI, Wells Fargo", "Reimagining Banking in the AI Era", "Featured Talks", "14:50"],
 ]},
 { day:2, stage:"plenary", start:"15:20", kind:"panel", title:"Panel: Agentic AI in Finance & Legal", talks:[
-  ["Nikhil Chandhok", "", "", "panelist"],
-  ["Faraz Shafiq", "", "", "panelist"],
-  ["Matt Carbonara", "Investor, Mayfield", "", "moderator"],
+  ["Nikhil Chandhok", "", "", "Panelists", "15:20"],
+  ["Faraz Shafiq", "", "", "Panelists", "15:20"],
+  ["Matt Carbonara", "Investor, Mayfield", "", "Moderator", "15:20"],
 ]},
 { day:2, stage:"plenary", start:"15:50", kind:"spotlight", title:"Startup Spotlight",
   note:"Featured Startups: Narada AI, cognee, Nimblemind, AgntID, RELAI, Headroom, Founding Dev, ArmorIQ, Keenable AI, H Company, Ludo Robotics, Nimble", talks:[]},
@@ -460,191 +467,191 @@ const SESSIONS = [
 
 /* ── ATLAS · SATURDAY ─────────────────────── */
 { day:1, stage:"atlas", start:"10:00", kind:"session", title:"Session 1: Foundational Capabilities", talks:[
-  ["Jianfeng Gao", "Technical Fellow & Corporate Vice President, Microsoft Research", "Agentic Modeling via Internalizing Agent Harnesses", "keynote"],
-  ["Sanja Fidler", "Associate Professor, University of Toronto; Former VP of AI Research, Nvidia", "World Models for Physical AI Simulation", "keynote"],
-  ["Giambattista Parascandolo", "Research Fellow, OpenAI", "When Language Models Learned to Reason", ""],
-  ["Aditya Grover", "Co-Founder/CTO, Inception Labs", "Redefining the Token Efficiency Frontier with Diffusion LLMs", ""],
+  ["Jianfeng Gao", "Technical Fellow & Corporate Vice President, Microsoft Research", "Agentic Modeling via Internalizing Agent Harnesses", "Keynotes", "10:00"],
+  ["Sanja Fidler", "Associate Professor, University of Toronto; Former VP of AI Research, Nvidia", "World Models for Physical AI Simulation", "Keynotes", "10:00"],
+  ["Giambattista Parascandolo", "Research Fellow, OpenAI", "When Language Models Learned to Reason", "Featured Talks", "10:30"],
+  ["Aditya Grover", "Co-Founder/CTO, Inception Labs", "Redefining the Token Efficiency Frontier with Diffusion LLMs", "Featured Talks", "10:30"],
 ]},
 { day:1, stage:"atlas", start:"10:50", kind:"workshop", title:"Workshop: Turning Chatbots into Agents: What Modern RL Looks Like by Daytona", talks:[
-  ["Lovre Pesut", "AI Engineer, Daytona", "", "workshop"],
-  ["Muhammad Hashmi", "DevRel, Daytona", "", "workshop"],
+  ["Lovre Pesut", "AI Engineer, Daytona", "", "Workshop", "10:50"],
+  ["Muhammad Hashmi", "DevRel, Daytona", "", "Workshop", "10:50"],
 ]},
 { day:1, stage:"atlas", start:"11:50", kind:"break", title:"Lunch & Poster Presentations", talks:[]},
 { day:1, stage:"atlas", start:"13:30", kind:"session", title:"Session 2: Robotics & World Models", talks:[
-  ["Peter Stone", "Chief Scientist, Sony AI; Professor, UT Austin", "Outplaying Elite Table Tennis Players with an Autonomous Robot", "keynote"],
-  ["Vincent Vanhoucke", "Distinguished Engineer, Waymo", "Trustworthy Agents in the Real World: Physical Autonomy Lessons for the Agentic AI Era", "keynote"],
-  ["Trevor Darrell", "Professor, UC Berkeley", "Real-World Reasoning Agents", ""],
-  ["Manmohan Chandraker", "Professor, University of California, San Diego", "Making Autonomy Autonomous: Toward Mental Models for Discovery and Intuition", ""],
-  ["Bolei Zhou", "Associate Professor, UCLA; Chief AI Scientist, Coco Robotics", "Scaling Sidewalk Autonomy with World Models", ""],
+  ["Peter Stone", "Chief Scientist, Sony AI; Professor, UT Austin", "Outplaying Elite Table Tennis Players with an Autonomous Robot", "Keynotes", "13:30"],
+  ["Vincent Vanhoucke", "Distinguished Engineer, Waymo", "Trustworthy Agents in the Real World: Physical Autonomy Lessons for the Agentic AI Era", "Keynotes", "13:30"],
+  ["Trevor Darrell", "Professor, UC Berkeley", "Real-World Reasoning Agents", "Featured Talks", "14:00"],
+  ["Manmohan Chandraker", "Professor, University of California, San Diego", "Making Autonomy Autonomous: Toward Mental Models for Discovery and Intuition", "Featured Talks", "14:00"],
+  ["Bolei Zhou", "Associate Professor, UCLA; Chief AI Scientist, Coco Robotics", "Scaling Sidewalk Autonomy with World Models", "Featured Talks", "14:00"],
 ]},
 { day:1, stage:"atlas", start:"14:30", kind:"workshop", title:"Workshop: Open-Source Agent Investigations: Security Arena, Distilled Traces, and Auto-Optimization by Lambda", talks:[
-  ["Devina Jain", "Research Engineer, Lambda", "", "workshop"],
-  ["Zach Mueller", "Head of Developer Relations, Lambda", "", "workshop"],
-  ["Chuan Li", "Chief Science Officer, Lambda", "", "workshop"],
+  ["Devina Jain", "Research Engineer, Lambda", "", "Workshop", "14:30"],
+  ["Zach Mueller", "Head of Developer Relations, Lambda", "", "Workshop", "14:30"],
+  ["Chuan Li", "Chief Science Officer, Lambda", "", "Workshop", "14:30"],
 ]},
 { day:1, stage:"atlas", start:"15:30", kind:"workshop", title:"Workshop: Building Agentic Apps End-to-End with Replit Agent", talks:[
-  ["Brandon Middleton", "Head of Education, Replit", "", "workshop"],
+  ["Brandon Middleton", "Head of Education, Replit", "", "Workshop", "15:30"],
 ]},
 { day:1, stage:"atlas", start:"16:30", kind:"session", title:"Session 3: Frameworks & Dev Platforms", talks:[
-  ["Philip Rathle", "CTO, Neo4j", "Graphs Are the Knowledge Layer for Agentic AI", ""],
-  ["Josh Albrecht", "Co-founder and CTO, Imbue", "Building Punk Software: An Open Agent Stack", ""],
-  ["Woosuk Kwon", "Co-Founder & CTO, Inferact", "vLLM: Building Open and Efficient Inference for Agents", ""],
-  ["Banghua Zhu", "Co-Founder, RadixArk", "Building Frontier Inference and Training Infra for Agent: A Case Study of SGLang and Miles", ""],
-  ["Ranjan Sinha", "IBM Fellow, CTO & VP for watsonx, Enterprise AI, IBM", "Speaking the Same Language: NLIP for Agent Interoperability", ""],
+  ["Philip Rathle", "CTO, Neo4j", "Graphs Are the Knowledge Layer for Agentic AI", "Featured Talks", "16:30"],
+  ["Josh Albrecht", "Co-founder and CTO, Imbue", "Building Punk Software: An Open Agent Stack", "Featured Talks", "16:30"],
+  ["Woosuk Kwon", "Co-Founder & CTO, Inferact", "vLLM: Building Open and Efficient Inference for Agents", "Featured Talks", "16:30"],
+  ["Banghua Zhu", "Co-Founder, RadixArk", "Building Frontier Inference and Training Infra for Agent: A Case Study of SGLang and Miles", "Featured Talks", "16:30"],
+  ["Ranjan Sinha", "IBM Fellow, CTO & VP for watsonx, Enterprise AI, IBM", "Speaking the Same Language: NLIP for Agent Interoperability", "Featured Talks", "16:30"],
 ]},
 { day:1, stage:"atlas", start:"17:45", kind:"break", title:"Reception & Poster Presentations", talks:[]},
 
 /* ── ATLAS · SUNDAY ─────────────────────── */
 { day:2, stage:"atlas", start:"10:00", kind:"session", title:"Session 1: Enterprise AI", talks:[
-  ["Sunita Verma", "Chief Technology Officer (CTO), Ironclad", "Rate Limiter on AI Adoption Is Organizational", "keynote"],
-  ["Ori Goshen", "Co-Founder/CEO, AI21 Labs", "Self Optimizing Agents", ""],
-  ["Rene Pajta", "Chief Architect Cloud & AI, Microsoft", "The Enterprise Version of the One-Person Unicorn", ""],
-  ["Vincent Sunn Chen", "VP & Founding Member, Snorkel AI", "The Art & Science of Benchmarking Agents", ""],
-  ["David Hsu", "CEO and founder, Retool", "Governance Is the Bottleneck to AI", ""],
-  ["Dan Klein", "Professor, UC Berkeley; Co-founder CTO, Scaled Cognition", "Superintelligence vs. Super-Reliability", ""],
+  ["Sunita Verma", "Chief Technology Officer (CTO), Ironclad", "Rate Limiter on AI Adoption Is Organizational", "Keynote", "10:00"],
+  ["Ori Goshen", "Co-Founder/CEO, AI21 Labs", "Self Optimizing Agents", "Featured Talks", "10:15"],
+  ["Rene Pajta", "Chief Architect Cloud & AI, Microsoft", "The Enterprise Version of the One-Person Unicorn", "Featured Talks", "10:15"],
+  ["Vincent Sunn Chen", "VP & Founding Member, Snorkel AI", "The Art & Science of Benchmarking Agents", "Featured Talks", "10:15"],
+  ["David Hsu", "CEO and founder, Retool", "Governance Is the Bottleneck to AI", "Featured Talks", "10:15"],
+  ["Dan Klein", "Professor, UC Berkeley; Co-founder CTO, Scaled Cognition", "Superintelligence vs. Super-Reliability", "Featured Talks", "10:15"],
 ]},
 { day:2, stage:"atlas", start:"11:10", kind:"workshop", title:"Workshop: From Assistants to AI Employees: Designing Agents That Own a Role, Not a Task by Ema", talks:[
-  ["Anushka Pathak", "Product Manager, Ema", "", "workshop"],
-  ["Soham Shah", "ML Engineer, Ema", "", "workshop"],
-  ["Eric Victorson", "Software Engineer, Ema", "", "workshop"],
+  ["Anushka Pathak", "Product Manager, Ema", "", "Workshop", "11:10"],
+  ["Soham Shah", "ML Engineer, Ema", "", "Workshop", "11:10"],
+  ["Eric Victorson", "Software Engineer, Ema", "", "Workshop", "11:10"],
 ]},
 { day:2, stage:"atlas", start:"12:10", kind:"break", title:"Lunch & Poster Presentations", talks:[]},
 { day:2, stage:"atlas", start:"13:00", kind:"session", title:"Session 2: Agent Evaluation & Benchmarks", talks:[
-  ["Anastasios N Angelopoulos", "Co-Founder/CEO, LLMArena", "Agent Arena: Causal Evaluations of Agents in the Real World", ""],
-  ["Michal Shmueli-Scheuer", "Distinguished Engineer, AI Benchmarking and Evaluation, IBM Research", "Ready for General Agents? Let's Test It.", ""],
-  ["Priya Ponnapalli", "SVP of Engineering, Enterprise AI, Scale AI", "Building Reliable Agents: An Evals-First Approach", ""],
-  ["Srijith Rajamohan", "Head of AI Research, Redis", "Spec-Driven Agents: Hierarchical Specs, Tooling, and Trajectory-Based Evaluation", ""],
+  ["Anastasios N Angelopoulos", "Co-Founder/CEO, LLMArena", "Agent Arena: Causal Evaluations of Agents in the Real World", "Featured Talks", "13:00"],
+  ["Michal Shmueli-Scheuer", "Distinguished Engineer, AI Benchmarking and Evaluation, IBM Research", "Ready for General Agents? Let's Test It.", "Featured Talks", "13:00"],
+  ["Priya Ponnapalli", "SVP of Engineering, Enterprise AI, Scale AI", "Building Reliable Agents: An Evals-First Approach", "Featured Talks", "13:00"],
+  ["Srijith Rajamohan", "Head of AI Research, Redis", "Spec-Driven Agents: Hierarchical Specs, Tooling, and Trajectory-Based Evaluation", "Featured Talks", "13:00"],
 ]},
 { day:2, stage:"atlas", start:"13:45", kind:"session", title:"Session 3: AI for Math", talks:[
-  ["Sergei Gukov", "Executive Director, American Institute of Mathematics; John D. MacArthur Professor of Theoretical Physics and Mathematics, California Institute of Technology", "The Future of AI for Long-Horizon and Sparse-Reward Tasks", "keynote"],
-  ["Lijie Chen", "Researcher, OpenAI", "The Unit Distance Conjecture and AI for Math", ""],
-  ["Vijay Ganesh", "Professor, Georgia Institute of Technology", "Semantic Alignment Models for Math and Software Engineering", ""],
+  ["Sergei Gukov", "Executive Director, American Institute of Mathematics; John D. MacArthur Professor of Theoretical Physics and Mathematics, California Institute of Technology", "The Future of AI for Long-Horizon and Sparse-Reward Tasks", "Keynote", "13:45"],
+  ["Lijie Chen", "Researcher, OpenAI", "The Unit Distance Conjecture and AI for Math", "Featured Talks", "14:00"],
+  ["Vijay Ganesh", "Professor, Georgia Institute of Technology", "Semantic Alignment Models for Math and Software Engineering", "Featured Talks", "14:00"],
 ]},
 { day:2, stage:"atlas", start:"14:15", kind:"workshop", title:"Workshop: Omnigent - A Meta Harness for AI Agents by Databricks", talks:[
-  ["Aravind Segu", "Software Engineer, Databricks", "", "workshop"],
+  ["Aravind Segu", "Software Engineer, Databricks", "", "Workshop", "14:15"],
 ]},
 { day:2, stage:"atlas", start:"15:15", kind:"break", title:"Reception & Poster Presentations", talks:[]},
 
 /* ── NEXUS · SATURDAY ─────────────────────── */
 { day:1, stage:"nexus", start:"10:00", kind:"session", title:"Session 1: AI for Science", talks:[
-  ["Markus J. Buehler", "Professor, MIT; Founder & CTO, Unreasonable Labs", "Superintelligence for Scientific Discovery: Multi-Agent Swarms and Large Reasoning Models", "keynote"],
-  ["James Zou", "Professor, Stanford", "Harnessing the Collective Intelligence of Agents for Science", ""],
-  ["Eric Ho", "Co-Founder/CEO, Goodfire", "Unlocking Scientific Abundance by Learning from Superhuman AI", ""],
-  ["Andrew Schoen", "Partner, NEA", "Solving Quantum Science Problems with SMART: A Self-evolving Multi-Agent Research Tree", ""],
-  ["Mengdi Wang", "Professor, Princeton", "LabOS: The AI-XR Co-Scientist That Sees and Works With Humans", ""],
-  ["Rose Yu", "Professor, UC San Diego; CEO/Co-Founder, GistFlow", "Towards AI Co-Scientists: Agentic AI for Scientific Discovery", ""],
-  ["Jonathan Welch", "Head of AI, Albert Invent", "Building AI for the Physical World: Lessons from Accelerating Discovery for Chemists Across the Globe", ""],
+  ["Markus J. Buehler", "Professor, MIT; Founder & CTO, Unreasonable Labs", "Superintelligence for Scientific Discovery: Multi-Agent Swarms and Large Reasoning Models", "Keynote", "10:00"],
+  ["James Zou", "Professor, Stanford", "Harnessing the Collective Intelligence of Agents for Science", "Featured Talks", "10:15"],
+  ["Eric Ho", "Co-Founder/CEO, Goodfire", "Unlocking Scientific Abundance by Learning from Superhuman AI", "Featured Talks", "10:15"],
+  ["Andrew Schoen", "Partner, NEA", "Solving Quantum Science Problems with SMART: A Self-evolving Multi-Agent Research Tree", "Featured Talks", "10:15"],
+  ["Mengdi Wang", "Professor, Princeton", "LabOS: The AI-XR Co-Scientist That Sees and Works With Humans", "Featured Talks", "10:15"],
+  ["Rose Yu", "Professor, UC San Diego; CEO/Co-Founder, GistFlow", "Towards AI Co-Scientists: Agentic AI for Scientific Discovery", "Featured Talks", "10:15"],
+  ["Jonathan Welch", "Head of AI, Albert Invent", "Building AI for the Physical World: Lessons from Accelerating Discovery for Chemists Across the Globe", "Featured Talks", "10:15"],
 ]},
 { day:1, stage:"nexus", start:"11:00", kind:"session", title:"Building a Token-Efficient OpenClaw Agentic System by AMD", talks:[
-  ["Mahdi Ghodsi", "AI Solutions Architect, AMD", "", ""],
-  ["Satya Devineni", "Product Application Engineer, AMD", "", ""],
-  ["Eda Zhou", "Software Development Engineer, AMD", "", ""],
+  ["Mahdi Ghodsi", "AI Solutions Architect, AMD", "", "", "11:00"],
+  ["Satya Devineni", "Product Application Engineer, AMD", "", "", "11:00"],
+  ["Eda Zhou", "Software Development Engineer, AMD", "", "", "11:00"],
 ]},
 { day:1, stage:"nexus", start:"12:10", kind:"break", title:"Lunch & Poster Presentations", talks:[]},
 { day:1, stage:"nexus", start:"13:30", kind:"session", title:"Session 2: Coding & Web Agents", talks:[
-  ["Silas Alberti", "SVP of Research, Cognition", "Scaling RL for Coding Agents - Lessons from Training SWE-1.7", ""],
-  ["Dhruv Batra", "Chief Scientist / co-founder, Yutori", "Computer-Use Models Will Agentify the Web, Not APIs", ""],
-  ["Shamir Abdul Aziz", "Prinicipal Product Manager, Microsoft", "Zero Ops - Agents Operate, Humans Govern", ""],
-  ["Krishnakumar Sharma", "CEO, Omokai", "Agentic Coding, the Boring Way", ""],
+  ["Silas Alberti", "SVP of Research, Cognition", "Scaling RL for Coding Agents - Lessons from Training SWE-1.7", "Featured Talks", "13:30"],
+  ["Dhruv Batra", "Chief Scientist / co-founder, Yutori", "Computer-Use Models Will Agentify the Web, Not APIs", "Featured Talks", "13:30"],
+  ["Shamir Abdul Aziz", "Prinicipal Product Manager, Microsoft", "Zero Ops - Agents Operate, Humans Govern", "Featured Talks", "13:30"],
+  ["Krishnakumar Sharma", "CEO, Omokai", "Agentic Coding, the Boring Way", "Featured Talks", "13:30"],
 ]},
 { day:1, stage:"nexus", start:"14:05", kind:"workshop", title:"Workshop by Fetcherr", talks:[
-  ["Uri Yerushalmi", "Chief AI Officer, Fetcherr", "Market Models: The Missing Foundation for Quantitative Decision Agents", "workshop"],
-  ["Hadar Sharvit", "Director of Deep Learning, Fetcherr", "Architecting Quantitative Decision Agents", "workshop"],
+  ["Uri Yerushalmi", "Chief AI Officer, Fetcherr", "Market Models: The Missing Foundation for Quantitative Decision Agents", "Workshop", "14:05"],
+  ["Hadar Sharvit", "Director of Deep Learning, Fetcherr", "Architecting Quantitative Decision Agents", "Workshop", "14:05"],
 ]},
 { day:1, stage:"nexus", start:"15:05", kind:"session", title:"Session 3: Agentic AI in Finance & Healthcare", talks:[
-  ["Krishnaram Kenthapadi", "Chief Scientist, Oracle Health", "Trustworthy Multi-Agent AI Systems for Healthcare: Challenges & Lessons Learned", ""],
-  ["Venkat Bhat", "Associate Professor; Director, AI for Mental Health (AI-M) Program, University of Toronto", "Agentic AI Applications for Mental Health: From Chatbots to Clinical Orchestration", ""],
-  ["Shaghayegh Gharghabi", "Deep Learning Scientists, NVIDIA", "One Environment, Whole Lifecycle: Agentic Post-Training for Nemotron in Finance", ""],
+  ["Krishnaram Kenthapadi", "Chief Scientist, Oracle Health", "Trustworthy Multi-Agent AI Systems for Healthcare: Challenges & Lessons Learned", "Featured Talks", "15:05"],
+  ["Venkat Bhat", "Associate Professor; Director, AI for Mental Health (AI-M) Program, University of Toronto", "Agentic AI Applications for Mental Health: From Chatbots to Clinical Orchestration", "Featured Talks", "15:05"],
+  ["Shaghayegh Gharghabi", "Deep Learning Scientists, NVIDIA", "One Environment, Whole Lifecycle: Agentic Post-Training for Nemotron in Finance", "Featured Talks", "15:05"],
 ]},
 { day:1, stage:"nexus", start:"15:30", kind:"session", title:"Session 4: Secure Agentic AI", talks:[
-  ["Jon-Rav Shende", "Chief Technology Officer, Thales Group", "Observability Is Not Governance: Building a Runtime Trust Plane for Agentic AI", ""],
-  ["Bo Li", "Co-Founder and CEO, Virtue AI; UIUC", "Securing AI Agents: From Risk Assessment and Runtime Guardrails to Self-Improvement and Certification", ""],
-  ["Eric Wallace", "Researcher, OpenAI", "Training Robust Agents", ""],
-  ["Milad Nasr", "Research Scientist, Anthropic", "End-to-End Security Research with a Language Model", ""],
-  ["Itsik Mantin", "Head of AI Security Research, Intuit", "When Good Agents Go Rogue", ""],
-  ["John A McDermid", "Director, Centre for Assuring Autonomy, Institute for Safe Autonomy, University of York", "Safety and Security of Agentic AI", ""],
-  ["Mohamed Nabeel", "Senior Principal Researcher, Palo Alto Networks", "Ghost in the Web Store: Preempting LLM-Hallucinated Browser Extension Supply Chain Attacks", ""],
+  ["Jon-Rav Shende", "Chief Technology Officer, Thales Group", "Observability Is Not Governance: Building a Runtime Trust Plane for Agentic AI", "Featured Talks", "15:30"],
+  ["Bo Li", "Co-Founder and CEO, Virtue AI; UIUC", "Securing AI Agents: From Risk Assessment and Runtime Guardrails to Self-Improvement and Certification", "Featured Talks", "15:30"],
+  ["Eric Wallace", "Researcher, OpenAI", "Training Robust Agents", "Featured Talks", "15:30"],
+  ["Milad Nasr", "Research Scientist, Anthropic", "End-to-End Security Research with a Language Model", "Featured Talks", "15:30"],
+  ["Itsik Mantin", "Head of AI Security Research, Intuit", "When Good Agents Go Rogue", "Featured Talks", "15:30"],
+  ["John A McDermid", "Director, Centre for Assuring Autonomy, Institute for Safe Autonomy, University of York", "Safety and Security of Agentic AI", "Featured Talks", "15:30"],
+  ["Mohamed Nabeel", "Senior Principal Researcher, Palo Alto Networks", "Ghost in the Web Store: Preempting LLM-Hallucinated Browser Extension Supply Chain Attacks", "Featured Talks", "15:30"],
 ]},
 { day:1, stage:"nexus", start:"16:45", kind:"workshop", title:"Workshop: Future of Agent Evaluation", talks:[]},
 { day:1, stage:"nexus", start:"17:45", kind:"break", title:"Reception & Poster Presentations", talks:[]},
 
 /* ── COMPASS · SATURDAY ─────────────────────── */
 { day:1, stage:"compass", start:"10:00", kind:"session", title:"Session 1: AI Systems", talks:[
-  ["Ion Stoica", "Co-Founder, Databricks and Anyscale; Professor, UC Berkeley", "", "keynote"],
-  ["Nick Harris", "Founder/CEO, Lightmatter", "Photonics Is the Future of Computing", ""],
-  ["Gosia Steinder", "IBM Fellow, IBM Research", "Beyond Harnesses \u2013 Platform Solutions for Agent Reliability, Security, and Efficiency", ""],
-  ["Tim Hockin", "Distinguished Engineer, Google", "Is Kubernetes Good for Agents? Infrastructure Solutions for Agent-Shaped Problems", ""],
+  ["Ion Stoica", "Co-Founder, Databricks and Anyscale; Professor, UC Berkeley", "", "Keynote", "10:00"],
+  ["Nick Harris", "Founder/CEO, Lightmatter", "Photonics Is the Future of Computing", "Featured Talks", "10:15"],
+  ["Gosia Steinder", "IBM Fellow, IBM Research", "Beyond Harnesses \u2013 Platform Solutions for Agent Reliability, Security, and Efficiency", "Featured Talks", "10:15"],
+  ["Tim Hockin", "Distinguished Engineer, Google", "Is Kubernetes Good for Agents? Infrastructure Solutions for Agent-Shaped Problems", "Featured Talks", "10:15"],
 ]},
 { day:1, stage:"compass", start:"10:45", kind:"workshop", title:"Workshop: Why Your AI Agent Needs a Wallet: Agentic commerce on Arc with USDC and Nanopayments", talks:[
-  ["Harshal Bhangale", "Staff Software Engineer, Circle", "", "workshop"],
+  ["Harshal Bhangale", "Staff Software Engineer, Circle", "", "Workshop", "10:45"],
 ]},
 { day:1, stage:"compass", start:"11:45", kind:"break", title:"Lunch & Poster Presentations", talks:[]},
 { day:1, stage:"compass", start:"13:30", kind:"session", title:"Session 2: Frameworks & Dev Platforms", talks:[
-  ["Wenbo Guo", "Assistant Professor, UCSB", "OpenSage: Next Generation of Agentic AI", ""],
-  ["Ramesh Raskar", "Professor, MIT", "The Agentic Web and the Bazaar Era of AI", ""],
-  ["Shiva Kasiviswanthan", "Principal Applied Scientist, Amazon Web Services", "Toward Adaptive Agent Frameworks", ""],
-  ["Tanya Roosta", "Director of AI, AMD, Berkeley", "Agentic AI for Information Retrieval", ""],
-  ["Denis Akhiyarov", "Senior Staff AI Scientist, ServiceNow", "Are Small LLMs Ready for Coding Agents?", ""],
-  ["Nilou Salehi", "Associate professor, UC, Berkeley", "Agent Learning Requires Compressing Information into an Executable Reasoning Structure", ""],
-  ["Johann Schleier-Smith", "Senior Staff Engineer, Temporal", "Systems Foundations for Agentic AI", ""],
+  ["Wenbo Guo", "Assistant Professor, UCSB", "OpenSage: Next Generation of Agentic AI", "Featured Talks", "13:30"],
+  ["Ramesh Raskar", "Professor, MIT", "The Agentic Web and the Bazaar Era of AI", "Featured Talks", "13:30"],
+  ["Shiva Kasiviswanthan", "Principal Applied Scientist, Amazon Web Services", "Toward Adaptive Agent Frameworks", "Featured Talks", "13:30"],
+  ["Tanya Roosta", "Director of AI, AMD, Berkeley", "Agentic AI for Information Retrieval", "Featured Talks", "13:30"],
+  ["Denis Akhiyarov", "Senior Staff AI Scientist, ServiceNow", "Are Small LLMs Ready for Coding Agents?", "Featured Talks", "13:30"],
+  ["Nilou Salehi", "Associate professor, UC, Berkeley", "Agent Learning Requires Compressing Information into an Executable Reasoning Structure", "Featured Talks", "13:30"],
+  ["Johann Schleier-Smith", "Senior Staff Engineer, Temporal", "Systems Foundations for Agentic AI", "Featured Talks", "13:30"],
 ]},
 { day:1, stage:"compass", start:"14:20", kind:"workshop", title:"Workshop: Build AI Agents That Survive Failure by Temporal", talks:[
-  ["Nikolay Advolodkin", "Senior Staff Developer Advocate, Temporal", "", "workshop"],
+  ["Nikolay Advolodkin", "Senior Staff Developer Advocate, Temporal", "", "Workshop", "14:20"],
 ]},
 { day:1, stage:"compass", start:"15:20", kind:"session", title:"Session 3: Foundational Capabilities", talks:[
-  ["Doga Kerestecioglu", "Principal Applied Scientist, Microsoft Corporation", "Mindful Agents: Human-Inspired Memories for Long-Horizon Tasks", ""],
-  ["Ian Fischer", "Co-CEO, Poetiq", "An Optimization Perspective on Recursive Self-Improvement", ""],
-  ["Yu Su", "CEO, NeoCognition; Associate Professor, OSU", "Intelligence + Continual Learning = Expertise", ""],
-  ["Furong Huang", "Associate Professor, University of Maryland", "Reasoning as Control: Adaptive Test-Time Compute for Planning Agents", ""],
-  ["Raja Giryes", "Professor, Tel Aviv University", "On the Visual Capabilities of Multimodal Models", ""],
+  ["Doga Kerestecioglu", "Principal Applied Scientist, Microsoft Corporation", "Mindful Agents: Human-Inspired Memories for Long-Horizon Tasks", "Featured Talks", "15:20"],
+  ["Ian Fischer", "Co-CEO, Poetiq", "An Optimization Perspective on Recursive Self-Improvement", "Featured Talks", "15:20"],
+  ["Yu Su", "CEO, NeoCognition; Associate Professor, OSU", "Intelligence + Continual Learning = Expertise", "Featured Talks", "15:20"],
+  ["Furong Huang", "Associate Professor, University of Maryland", "Reasoning as Control: Adaptive Test-Time Compute for Planning Agents", "Featured Talks", "15:20"],
+  ["Raja Giryes", "Professor, Tel Aviv University", "On the Visual Capabilities of Multimodal Models", "Featured Talks", "15:20"],
 ]},
 { day:1, stage:"compass", start:"16:10", kind:"workshop", title:"Workshop: The Open Agentic Stack: Building the Future of AI Systems with Open Source, Open Standards and Composability by Linux Foundation", talks:[
-  ["Matt White", "Former Global CTO of AI, Linux Foundation; CTO, PyTorch Foundation", "", "workshop"],
+  ["Matt White", "Former Global CTO of AI, Linux Foundation; CTO, PyTorch Foundation", "", "Workshop", "16:10"],
 ]},
 { day:1, stage:"compass", start:"17:10", kind:"break", title:"Reception & Poster Presentations", talks:[]},
 
 /* ── COMPASS · SUNDAY ─────────────────────── */
 { day:2, stage:"compass", start:"10:00", kind:"session", title:"Session 1: AI Safety", talks:[
-  ["Chris Bregler", "Senior Director / Distinguished Scientist, Google DeepMind; Academy Scientific and Technical Award Winner", "Deepfakes and More: How Agents with New Tools Can Mitigate and Provide More Context", "keynote"],
-  ["Kathy Baxter", "VP / Principal Architect, Responsible AI & Tech, Salesforce", "The Human in the Loop: Navigating the Realities of AI for Employee Flourishing", ""],
-  ["Lovedeep Gondara", "Head of AI R&D, Vanguard; Adjunct Professor, University of British Columbia", "Trustworthy Agentic AI in Regulated Domains: Robustness, Privacy, and Accountability as Co-Design Imperatives", ""],
-  ["Alex Obadia", "Programme Director, Advanced Research & Invention Agency", "A Society of Agents: Trust at Machine Speed, from Bits to Atoms", ""],
-  ["Neil Lawrence", "Chief Scientist and Co-founder, Trent AI", "Viable Systems, Judgment, and AI Safety", ""],
-  ["Huan Sun", "Associate Professor, The Ohio State University", "Smarter and Safer Everyday? Continual Learning and Safety in Computer-Use Agents", ""],
-  ["Navrina Singh", "CEO, Founder, Credo AI", "Earning Autonomy: Governance as Code for the Agentic Enterprise", ""],
+  ["Chris Bregler", "Senior Director / Distinguished Scientist, Google DeepMind; Academy Scientific and Technical Award Winner", "Deepfakes and More: How Agents with New Tools Can Mitigate and Provide More Context", "Keynote", "10:00"],
+  ["Kathy Baxter", "VP / Principal Architect, Responsible AI & Tech, Salesforce", "The Human in the Loop: Navigating the Realities of AI for Employee Flourishing", "Featured Talks", "10:15"],
+  ["Lovedeep Gondara", "Head of AI R&D, Vanguard; Adjunct Professor, University of British Columbia", "Trustworthy Agentic AI in Regulated Domains: Robustness, Privacy, and Accountability as Co-Design Imperatives", "Featured Talks", "10:15"],
+  ["Alex Obadia", "Programme Director, Advanced Research & Invention Agency", "A Society of Agents: Trust at Machine Speed, from Bits to Atoms", "Featured Talks", "10:15"],
+  ["Neil Lawrence", "Chief Scientist and Co-founder, Trent AI", "Viable Systems, Judgment, and AI Safety", "Featured Talks", "10:15"],
+  ["Huan Sun", "Associate Professor, The Ohio State University", "Smarter and Safer Everyday? Continual Learning and Safety in Computer-Use Agents", "Featured Talks", "10:15"],
+  ["Navrina Singh", "CEO, Founder, Credo AI", "Earning Autonomy: Governance as Code for the Agentic Enterprise", "Featured Talks", "10:15"],
 ]},
 { day:2, stage:"compass", start:"11:00", kind:"workshop", title:"Workshop: Infrastructure You Can Talk To by SUSE", talks:[
-  ["Jeff Price", "Field CTO of North America, SUSE", "", "workshop"],
+  ["Jeff Price", "Field CTO of North America, SUSE", "", "Workshop", "11:00"],
 ]},
 { day:2, stage:"compass", start:"12:10", kind:"break", title:"Lunch & Poster Presentations", talks:[]},
 { day:2, stage:"compass", start:"13:00", kind:"session", title:"Session 2: AI Systems", talks:[
-  ["Jun Yang", "Senior Director of Compute Architecture, NVIDIA", "Using Agents to Build Production AI Systems: Lessons, Pitfalls, and Limits", ""],
-  ["Ankit Sobti", "Co-Founder & CTO, Postman", "From Agent Demos to Production: How Postman Is Building Reliable AI Agent Infrastructure", ""],
-  ["Rahul Bakshi", "Director, Applied Science (Edge AI), Amazon", "Scale Compute to the Signal", ""],
-  ["John Liu", "Principal Product Manager, AWS", "Looping for Model Optimization", ""],
-  ["Jongryool Kim", "Senior Director / Head of AI System Infra., SK hynix", "Disaggregated LLM Serving with Shared Memory KV Cache at Rack-Scale", ""],
-  ["Ben Athiwaratkun", "Senior Director, Core ML (Turbo), Together AI", "Unified Orchestration System for Verifier-Free Evolution", ""],
-  ["Tushar Krishna", "Associate Professor, Georgia Tech; CEO, InfraVana", "How Agentic AI Is Rewriting the Rules of AI Infrastructure", ""],
+  ["Jun Yang", "Senior Director of Compute Architecture, NVIDIA", "Using Agents to Build Production AI Systems: Lessons, Pitfalls, and Limits", "Featured Talks", "13:00"],
+  ["Ankit Sobti", "Co-Founder & CTO, Postman", "From Agent Demos to Production: How Postman Is Building Reliable AI Agent Infrastructure", "Featured Talks", "13:00"],
+  ["Rahul Bakshi", "Director, Applied Science (Edge AI), Amazon", "Scale Compute to the Signal", "Featured Talks", "13:00"],
+  ["John Liu", "Principal Product Manager, AWS", "Looping for Model Optimization", "Featured Talks", "13:00"],
+  ["Jongryool Kim", "Senior Director / Head of AI System Infra., SK hynix", "Disaggregated LLM Serving with Shared Memory KV Cache at Rack-Scale", "Featured Talks", "13:00"],
+  ["Ben Athiwaratkun", "Senior Director, Core ML (Turbo), Together AI", "Unified Orchestration System for Verifier-Free Evolution", "Featured Talks", "13:00"],
+  ["Tushar Krishna", "Associate Professor, Georgia Tech; CEO, InfraVana", "How Agentic AI Is Rewriting the Rules of AI Infrastructure", "Featured Talks", "13:00"],
 ]},
 { day:2, stage:"compass", start:"13:45", kind:"session", title:"Session 3: Enterprise AI", talks:[
-  ["Eno Reyes", "Co-Founder / CTO, Factory AI", "Building the Software Factory", ""],
-  ["Ankit Goyal", "Principal Staff Software Engineer, LinkedIn", "Infrastructure for Long-Running Agents", ""],
-  ["Daniel Homola", "Lead AI Engineer, BMW Research", "From Multi-Agent Patterns to Reliable Orchestration", ""],
-  ["Christopher Petrillo", "Principal Product Manager, The Wikimedia Foundation", "Agentic AI and the Human Core: Scaling Wikimedia's Participatory Model", ""],
-  ["Nayaki Nayyar", "CEO, Siteimprove", "Transforming from SaaS to an Agentic Enterprise", ""],
-  ["Surbhi Rathore", "VP, AI Products & Strategy, Invoca", "Agentic AI Is a UX Problem Disguised as a Technology Breakthrough", ""],
-  ["Daniel Fink", "AI Engineering Lead, Cognizant", "Scaling Up Config-Driven Multi-Agent Networks with Neuro SAN", ""],
+  ["Eno Reyes", "Co-Founder / CTO, Factory AI", "Building the Software Factory", "Featured Talks", "13:45"],
+  ["Ankit Goyal", "Principal Staff Software Engineer, LinkedIn", "Infrastructure for Long-Running Agents", "Featured Talks", "13:45"],
+  ["Daniel Homola", "Lead AI Engineer, BMW Research", "From Multi-Agent Patterns to Reliable Orchestration", "Featured Talks", "13:45"],
+  ["Christopher Petrillo", "Principal Product Manager, The Wikimedia Foundation", "Agentic AI and the Human Core: Scaling Wikimedia's Participatory Model", "Featured Talks", "13:45"],
+  ["Nayaki Nayyar", "CEO, Siteimprove", "Transforming from SaaS to an Agentic Enterprise", "Featured Talks", "13:45"],
+  ["Surbhi Rathore", "VP, AI Products & Strategy, Invoca", "Agentic AI Is a UX Problem Disguised as a Technology Breakthrough", "Featured Talks", "13:45"],
+  ["Daniel Fink", "AI Engineering Lead, Cognizant", "Scaling Up Config-Driven Multi-Agent Networks with Neuro SAN", "Featured Talks", "13:45"],
 ]},
 { day:2, stage:"compass", start:"14:30", kind:"session", title:"Session 4: Agent Evaluation & Benchmarks", talks:[
-  ["Debarshi Raha", "VP & Fellow Engineer, DigitalOcean", "Preferences > Benchmarks: Model Routing for How Teams Actually Build", "keynote"],
-  ["Yuan (Emily) Xue", "Head of Enterprise AI, Scale AI", "The Exam Before Enterprise Deployment", ""],
-  ["Chenguang Wang", "Assistant Professor, University of California, Santa Cruz; Research Advisor, Scale AI", "From Training to Evaluation: Open Recipes for Building Agentic AI at Scale AI", ""],
-  ["Zelin Wan, Ph.D.", "Senior AI Engineer, Postman", "Measuring API Agent Reliability for Long-Horizon Tasks in Production", ""],
-  ["Rahul Krishna", "Senior Research Scientist, IBM Software Innovation Labs", "ScarfBench: Can Agents Migrate Enterprise Java?", ""],
-  ["Grace Tang", "AI @ Hex", "Data Benchmarks: Where Everything's Made Up and the Points Don't Matter", ""],
-  ["Arindam Sett", "Principal ML Engineer, Genentech", "AIDaR: AI Data Readiness Evaluations Framework", ""],
-  ["Scott Clark", "Co-Founder & CEO, Distributional", "How Better Evals Can Bring Abundance Through Accelerated Scientific Discovery", ""],
-  ["Aayush Agrawal", "Product Lead, Uber", "Evals: The Engine for Agent Improvement", ""],
+  ["Debarshi Raha", "VP & Fellow Engineer, DigitalOcean", "Preferences > Benchmarks: Model Routing for How Teams Actually Build", "Keynote", "14:30"],
+  ["Yuan (Emily) Xue", "Head of Enterprise AI, Scale AI", "The Exam Before Enterprise Deployment", "Featured Talks", "14:45"],
+  ["Chenguang Wang", "Assistant Professor, University of California, Santa Cruz; Research Advisor, Scale AI", "From Training to Evaluation: Open Recipes for Building Agentic AI at Scale AI", "Featured Talks", "14:45"],
+  ["Zelin Wan, Ph.D.", "Senior AI Engineer, Postman", "Measuring API Agent Reliability for Long-Horizon Tasks in Production", "Featured Talks", "14:45"],
+  ["Rahul Krishna", "Senior Research Scientist, IBM Software Innovation Labs", "ScarfBench: Can Agents Migrate Enterprise Java?", "Featured Talks", "14:45"],
+  ["Grace Tang", "AI @ Hex", "Data Benchmarks: Where Everything's Made Up and the Points Don't Matter", "Featured Talks", "14:45"],
+  ["Arindam Sett", "Principal ML Engineer, Genentech", "AIDaR: AI Data Readiness Evaluations Framework", "Featured Talks", "14:45"],
+  ["Scott Clark", "Co-Founder & CEO, Distributional", "How Better Evals Can Bring Abundance Through Accelerated Scientific Discovery", "Featured Talks", "14:45"],
+  ["Aayush Agrawal", "Product Lead, Uber", "Evals: The Engine for Agent Improvement", "Featured Talks", "14:45"],
 ]},
 { day:2, stage:"compass", start:"15:40", kind:"break", title:"Reception & Poster Presentations", talks:[]},
 
@@ -655,7 +662,7 @@ const SESSIONS = [
 (function(){
 "use strict";
 
-const BUILD = '2026-08-01-05';   /* kept in step with sw.js by bump_version.py */
+const BUILD = '2026-08-01-06';   /* kept in step with sw.js by bump_version.py */
 const STORE = 'aisummit2026.saved';
 const THEME = 'aisummit2026.theme';
 const $  = s => document.querySelector(s);
@@ -801,9 +808,9 @@ function haystack(s){
 }
 
 function whoLine(s){
-  const names = s.talks.filter(t => t[3] !== 'moderator').map(t => t[0]);
+  const names = s.talks.filter(t => t[3] !== 'Moderator').map(t => t[0]);
   if (!names.length) return '';
-  const mod = s.talks.find(t => t[3] === 'moderator');
+  const mod = s.talks.find(t => t[3] === 'Moderator');
   return names.map(n => '<b>' + esc(n) + '</b>').join(', ')
     + (mod ? ' · mod. ' + esc(mod[0]) : '');
 }
@@ -876,13 +883,22 @@ function card(s, advisories){
 
     const d = el('div','detail');
     if (s.note) { const p = el('p','note'); p.textContent = s.note; d.appendChild(p); }
+
+    let lastGroup = null;
     s.talks.forEach(t => {
+      const name = t[0], affil = t[1], talk = t[2], group = t[3] || '', when = t[4] || '';
+      const key = group + '@' + when;
+      if (group && key !== lastGroup) {
+        lastGroup = key;
+        const g = el('div', 'grp' + (group === 'Moderator' ? ' mod' : ''));
+        g.innerHTML = (when ? '<span class="gt">' + fmt(when) + '</span>' : '')
+          + '<span class="gl">' + esc(group) + '</span>';
+        d.appendChild(g);
+      }
       const row = el('div','talk');
-      let html = '';
-      if (t[3]) html += '<span class="role' + (t[3] === 'moderator' ? ' mod' : '') + '">' + esc(t[3]) + '</span>';
-      html += '<span class="nm">' + esc(t[0]) + '</span>';
-      if (t[1]) html += '<span class="af">' + esc(t[1]) + '</span>';
-      if (t[2]) html += '<span class="tt">' + esc(t[2]) + '</span>';
+      let html = '<span class="nm">' + esc(name) + '</span>';
+      if (affil) html += '<span class="af">' + esc(affil) + '</span>';
+      if (talk) html += '<span class="tt">' + esc(talk) + '</span>';
       row.innerHTML = html;
       d.appendChild(row);
     });
@@ -1056,7 +1072,17 @@ function downloadICS(){
   picks.forEach(s => {
     const day = EVENT.days.find(d => d.n === s.day);
     const st = STAGES[s.stage];
-    const desc = s.talks.map(t => t[0] + (t[1] ? ' — ' + t[1] : '') + (t[2] ? '\n' + t[2] : '')).join('\n\n');
+    let lastG = null;
+    const rows = [];
+    s.talks.forEach(t => {
+      const key = (t[3] || '') + '@' + (t[4] || '');
+      if (t[3] && key !== lastG) {
+        lastG = key;
+        rows.push('', (t[4] ? fmt(t[4]) + ' · ' : '') + t[3]);
+      }
+      rows.push(t[0] + (t[1] ? ' — ' + t[1] : '') + (t[2] ? '\n' + t[2] : ''));
+    });
+    const desc = rows.join('\n').trim();
     out.push('BEGIN:VEVENT',
       'UID:' + s.id + '@agentic-ai-summit-2026',
       'DTSTAMP:' + utc(day.iso,'00:00'),

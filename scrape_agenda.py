@@ -191,16 +191,20 @@ def build(nodes: list[tuple[int, tuple]]) -> list[dict]:
             key = label.lower()
 
             if not is_break and (key in GENERIC or not label) and session:
-                role = GENERIC.get(key, "")
                 if card is None:
                     card = {"day": day, "stage": stage, "start": hhmm(session[0]),
                             "kind": kind_of(session[1], False), "title": session[1],
                             "talks": [], "note": ""}
                     out.append(card)
+                # A session runs as timed sub-blocks — Keynote at 1:30, then
+                # Featured Talks at 1:50. Keep the label and the block's own
+                # start so the app can show that structure.
+                group = label or "Featured Talks"
                 for sp in speakers:
-                    card["talks"].append([sp["name"], sp["affil"], sp["talk"], role])
+                    card["talks"].append([sp["name"], sp["affil"], sp["talk"],
+                                          group, hhmm(time)])
                 for x in extras:
-                    add_extra(card, x)
+                    add_extra(card, x, hhmm(time))
                 continue
 
             # Distinctive slot: its own card.
@@ -208,24 +212,24 @@ def build(nodes: list[tuple[int, tuple]]) -> list[dict]:
             use = label or (session[1] if session else "Session")
             c = {"day": day, "stage": stage, "start": hhmm(time),
                  "kind": kind_of(use, is_break), "title": use, "talks": [], "note": ""}
-            role = "workshop" if c["kind"] == "workshop" else ""
+            group = "Workshop" if c["kind"] == "workshop" else ""
             for sp in speakers:
-                c["talks"].append([sp["name"], sp["affil"], sp["talk"], role])
+                c["talks"].append([sp["name"], sp["affil"], sp["talk"], group, hhmm(time)])
             for x in extras:
-                add_extra(c, x)
+                add_extra(c, x, hhmm(time))
             out.append(c)
     return out
 
 
-def add_extra(card: dict, text: str) -> None:
+def add_extra(card: dict, text: str, when: str) -> None:
     """`.moderator` divs carry panelist lists, the moderator, or a note."""
     if text.lower().startswith("panelists:"):
         for name in split_names(text.split(":", 1)[1]):
             nm, af = name_affil(name)
-            card["talks"].append([nm, af, "", "panelist"])
+            card["talks"].append([nm, af, "", "Panelists", when])
     elif text.lower().startswith("moderator:"):
         nm, af = name_affil(text.split(":", 1)[1].strip())
-        card["talks"].append([nm, af, "", "moderator"])
+        card["talks"].append([nm, af, "", "Moderator", when])
     else:
         card["note"] = (card["note"] + " " + text).strip()
 
@@ -258,7 +262,9 @@ HEADER = '''/* Agentic AI Summit 2026 — schedule data
    https://rdi.berkeley.edu/events/agentic-ai-summit-2026
    Do not edit by hand; re-run the scraper instead.
 
-   Talk tuple: [name, affiliation, talkTitle, role] */
+   Talk tuple: [name, affiliation, talkTitle, group, startTime]
+   `group` is the sub-block label as printed ("Keynote", "Featured Talks",
+   "Panelists", "Moderator"); `startTime` is that sub-block's own start. */
 
 const EVENT = {
   name: 'Agentic AI Summit 2026',
@@ -347,7 +353,7 @@ def main() -> None:
     sec = raw.find('class="agenda-section"')
     end = raw.find("Featured Speakers", sec)
     want = len(re.findall(r'class="speaker-name"', raw[sec:end]))
-    got = sum(1 for c in cards for t in c["talks"] if t[3] not in ("panelist", "moderator"))
+    got = sum(1 for c in cards for t in c["talks"] if t[3] not in ("Panelists", "Moderator"))
     if want != got:
         sys.exit(f"speaker count mismatch: page has {want}, output has {got}")
 

@@ -8,7 +8,7 @@
  *
  * Bytes that never change (map, icons) stay cache-first.
  */
-const VERSION = '2026-08-01-05';
+const VERSION = '2026-08-01-06';
 const CACHE = 'aisummit-' + VERSION;
 
 const SHELL = ['./', './index.html', './data.js', './manifest.json'];

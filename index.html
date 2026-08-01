@@ -166,11 +166,16 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .card[data-open="1"] .more svg{transform:rotate(180deg)}
 .detail{display:none;padding:2px 12px 12px;border-top:1px solid var(--line)}
 .card[data-open="1"] .detail{display:block}
-.talk{display:flex;flex-direction:column;gap:2px;padding:9px 0;border-bottom:1px solid var(--line)}
-.talk:last-child{border-bottom:0;padding-bottom:2px}
-.talk .role{font:650 9.5px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;
-  color:var(--c);margin-bottom:2px}
-.talk .role.mod{color:var(--muted)}
+/* A session runs as timed sub-blocks; the header carries the block's own
+   start so you can tell when a given talk actually begins. */
+.grp{display:flex;align-items:baseline;gap:8px;padding:12px 0 4px;
+  border-top:1px solid var(--line)}
+.grp:first-child{border-top:0;padding-top:7px}
+.grp .gt{font:600 11.5px/1 var(--mono);font-variant-numeric:tabular-nums;
+  color:var(--ink-2);letter-spacing:-.02em}
+.grp .gl{font:650 9.5px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--c)}
+.grp.mod .gl{color:var(--muted)}
+.talk{display:flex;flex-direction:column;gap:2px;padding:7px 0 3px}
 .talk .nm{font-size:13.5px;font-weight:640;letter-spacing:-.008em}
 .talk .af{font-size:12px;color:var(--muted);line-height:1.4}
 .talk .tt{font-size:13px;color:var(--ink-2);line-height:1.45;margin-top:3px;font-style:italic}
@@ -301,7 +306,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 (function(){
 "use strict";
 
-const BUILD = '2026-08-01-05';   /* kept in step with sw.js by bump_version.py */
+const BUILD = '2026-08-01-06';   /* kept in step with sw.js by bump_version.py */
 const STORE = 'aisummit2026.saved';
 const THEME = 'aisummit2026.theme';
 const $  = s => document.querySelector(s);
@@ -447,9 +452,9 @@ function haystack(s){
 }
 
 function whoLine(s){
-  const names = s.talks.filter(t => t[3] !== 'moderator').map(t => t[0]);
+  const names = s.talks.filter(t => t[3] !== 'Moderator').map(t => t[0]);
   if (!names.length) return '';
-  const mod = s.talks.find(t => t[3] === 'moderator');
+  const mod = s.talks.find(t => t[3] === 'Moderator');
   return names.map(n => '<b>' + esc(n) + '</b>').join(', ')
     + (mod ? ' · mod. ' + esc(mod[0]) : '');
 }
@@ -522,13 +527,22 @@ function card(s, advisories){
 
     const d = el('div','detail');
     if (s.note) { const p = el('p','note'); p.textContent = s.note; d.appendChild(p); }
+
+    let lastGroup = null;
     s.talks.forEach(t => {
+      const name = t[0], affil = t[1], talk = t[2], group = t[3] || '', when = t[4] || '';
+      const key = group + '@' + when;
+      if (group && key !== lastGroup) {
+        lastGroup = key;
+        const g = el('div', 'grp' + (group === 'Moderator' ? ' mod' : ''));
+        g.innerHTML = (when ? '<span class="gt">' + fmt(when) + '</span>' : '')
+          + '<span class="gl">' + esc(group) + '</span>';
+        d.appendChild(g);
+      }
       const row = el('div','talk');
-      let html = '';
-      if (t[3]) html += '<span class="role' + (t[3] === 'moderator' ? ' mod' : '') + '">' + esc(t[3]) + '</span>';
-      html += '<span class="nm">' + esc(t[0]) + '</span>';
-      if (t[1]) html += '<span class="af">' + esc(t[1]) + '</span>';
-      if (t[2]) html += '<span class="tt">' + esc(t[2]) + '</span>';
+      let html = '<span class="nm">' + esc(name) + '</span>';
+      if (affil) html += '<span class="af">' + esc(affil) + '</span>';
+      if (talk) html += '<span class="tt">' + esc(talk) + '</span>';
       row.innerHTML = html;
       d.appendChild(row);
     });
@@ -702,7 +716,17 @@ function downloadICS(){
   picks.forEach(s => {
     const day = EVENT.days.find(d => d.n === s.day);
     const st = STAGES[s.stage];
-    const desc = s.talks.map(t => t[0] + (t[1] ? ' — ' + t[1] : '') + (t[2] ? '\n' + t[2] : '')).join('\n\n');
+    let lastG = null;
+    const rows = [];
+    s.talks.forEach(t => {
+      const key = (t[3] || '') + '@' + (t[4] || '');
+      if (t[3] && key !== lastG) {
+        lastG = key;
+        rows.push('', (t[4] ? fmt(t[4]) + ' · ' : '') + t[3]);
+      }
+      rows.push(t[0] + (t[1] ? ' — ' + t[1] : '') + (t[2] ? '\n' + t[2] : ''));
+    });
+    const desc = rows.join('\n').trim();
     out.push('BEGIN:VEVENT',
       'UID:' + s.id + '@agentic-ai-summit-2026',
       'DTSTAMP:' + utc(day.iso,'00:00'),
