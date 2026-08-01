@@ -208,8 +208,11 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .notes li{background:var(--surface);padding:9px 12px}
 .notes .nk{font:650 10px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .notes .nv{margin-top:4px;font-size:13px;line-height:1.45;color:var(--ink-2)}
-.src{padding:14px 2px 4px;font-size:11.5px;line-height:1.5;color:var(--muted)}
+.src{padding:14px 2px 4px;font-size:11.5px;line-height:1.7;color:var(--muted)}
 .src a{color:var(--muted)}
+.src b{font:600 11.5px var(--mono);color:var(--ink-2)}
+.lnk{font:inherit;color:var(--ink-2);text-decoration:underline;text-underline-offset:2px}
+.lnk:hover{color:var(--ink)}
 
 .toolbar{display:flex;gap:8px;padding:12px var(--pad) 2px}
 .tbtn{flex:1;padding:9px;border-radius:9px;border:1px solid var(--line-2);background:var(--surface);
@@ -298,6 +301,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 (function(){
 "use strict";
 
+const BUILD = '2026-08-01-05';   /* kept in step with sw.js by bump_version.py */
 const STORE = 'aisummit2026.saved';
 const THEME = 'aisummit2026.theme';
 const $  = s => document.querySelector(s);
@@ -665,8 +669,19 @@ function viewMap(main){
 
   const src = el('p','src');
   src.innerHTML = 'Schedule from rdi.berkeley.edu · stage colours match the venue map pins. '
-    + 'Times are Berkeley local (PT). Your picks are stored on this device only.';
+    + 'Times are Berkeley local (PT). Your picks are stored on this device only.'
+    + '<br>Build <b>' + BUILD + '</b> · ' + SESSIONS.length + ' sessions'
+    + ' · <button class="lnk" id="force">check for updates</button>';
   w.appendChild(src);
+
+  src.querySelector('#force').onclick = async () => {
+    try {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r => r.unregister()));
+      for (const k of await caches.keys()) await caches.delete(k);
+    } catch (e) {}
+    location.reload();
+  };
 
   main.appendChild(w);
 }
@@ -754,7 +769,25 @@ setInterval(() => {
 /* sw:start — build_artifact.py strips this block; there is no
    same-origin sw.js on the artifact host. */
 if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
-  navigator.serviceWorker.register('sw.js').catch(function(){});
+  /* controllerchange also fires on the very first registration, when there
+     was nothing to replace — only a genuine handover should reload. */
+  const hadController = !!navigator.serviceWorker.controller;
+  let reloading = false;
+  navigator.serviceWorker.addEventListener('controllerchange', function(){
+    if (!hadController || reloading) return;
+    reloading = true;
+    location.reload();
+  });
+
+  navigator.serviceWorker.register('sw.js').then(function(reg){
+    reg.update();
+    /* An installed iOS app resumes without navigating, so nothing would
+       otherwise prompt an update check. */
+    document.addEventListener('visibilitychange', function(){
+      if (!document.hidden) reg.update();
+    });
+    setInterval(function(){ reg.update(); }, 15 * 60 * 1000);
+  }).catch(function(){});
 }
 /* sw:end */
 })();
